@@ -1,5 +1,5 @@
 # dependencies
-/node_modules
+/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -13,12 +13,19 @@
 
 # next.js
 /.next/
-/.vinext/
 /out/
+/dist/
+/.vinext/
+/.wrangler/
 
 # misc
 .DS_Store
 *.pem
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tsbuildinfo
 
 # debug
 npm-debug.log*
@@ -28,11 +35,13 @@ yarn-error.log*
 
 # local environment
 .env*
+!.env.example
 
-# deployment and generated files
-.vercel
+# Vercel local project linkage and deployment output
+.vercel/
 next-env.d.ts
-/dist/
-/.wrangler/
-/outputs/
-/work/
+
+# test and tool output
+/playwright-report/
+/test-results/
+/.cache/
