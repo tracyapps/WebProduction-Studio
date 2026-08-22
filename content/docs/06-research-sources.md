@@ -42,5 +42,4 @@ Initial primary sources informing the feasibility assessment. Last reviewed 2026
 
 ## Research caveat
 
-Core capabilities demonstrate feasibility; they do not determine the WPs UX. Internal or unstable Gutenberg APIs should not become accidental foundations without explicit compatibility testing and a version strategy.
-
+Core capabilities demonstrate feasibility; they do not determine the WPS UX. Internal or unstable Gutenberg APIs should not become accidental foundations without explicit compatibility testing and a version strategy.

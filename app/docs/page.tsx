@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/SiteHeader';
 import { publicDocs } from '@/lib/docs';
 
 export const metadata: Metadata = {
-  title: 'Working docs — WPs',
+  title: 'Working docs — WPS',
   description: 'The public product notebook for WebProduction Studio.',
 };
 
@@ -20,7 +20,7 @@ export default function DocsIndex() {
         <div className="kicker">Public product notebook</div>
         <h1>The thinking stays visible.</h1>
         <p>
-          WPs is being designed in public. These pages are generated from the same
+          WebProduction Studio (WPS) is being designed in public. These pages are generated from the same
           working documents used to make product and architecture decisions.
         </p>
         <div className="doc-sync-note">
@@ -29,7 +29,7 @@ export default function DocsIndex() {
         </div>
       </header>
 
-      <section className="docs-grid" aria-label="WPs documentation">
+      <section className="docs-grid" aria-label="WPS documentation">
         {publicDocs.map((doc, index) => (
           <Link className="doc-card" href={`/docs/${doc.slug}`} key={doc.slug}>
             <span className="doc-index">{String(index + 1).padStart(2, '0')}</span>

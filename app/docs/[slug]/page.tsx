@@ -19,7 +19,7 @@ export async function generateMetadata({
   const doc = getDoc(slug);
   if (!doc) return {};
   return {
-    title: `${doc.label} — WPs`,
+    title: `${doc.label} — WPS`,
     description: doc.description,
     openGraph: { images: [] },
     twitter: { images: [] },

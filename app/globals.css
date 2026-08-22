@@ -935,7 +935,16 @@ main {
 .footer-brand strong { font-size: 12px; }
 .footer-brand div span { color: #646b65; font-size: 10px; }
 .footer-links { display: flex; gap: 24px; color: #8a908b; font-size: 11px; }
-.site-footer > p { justify-self: end; margin: 0; color: #555b56; font: 8px var(--font-geist-mono), monospace; text-transform: uppercase; }
+.footer-legal {
+  justify-self: end;
+  max-width: 400px;
+  color: #555b56;
+  font: 8px/1.55 var(--font-geist-mono), monospace;
+  text-align: right;
+}
+.footer-legal p { margin: 0; }
+.footer-legal p + p { margin-top: 7px; }
+.footer-legal a { color: #6f766f; text-decoration: underline; text-underline-offset: 2px; }
 
 /* Documentation */
 .inner-page { min-height: 100vh; }
@@ -1073,7 +1082,7 @@ main {
   .doc-sidebar nav { grid-template-columns: 1fr 1fr; }
   .site-footer { grid-template-columns: 1fr; }
   .footer-links { justify-self: start; }
-  .site-footer > p { justify-self: start; }
+  .footer-legal { justify-self: start; text-align: left; }
 }
 
 @media (max-width: 660px) {

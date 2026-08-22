@@ -30,7 +30,7 @@ export default function Home() {
           </h1>
 
           <p className="hero-intro">
-            WPs is an open, purpose-driven production system for the people who
+            WebProduction Studio (WPS) is an open, purpose-driven production system for the people who
             build WordPress sites—and a radically clearer editing experience for
             the clients who live with them.
           </p>
@@ -53,7 +53,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="product-stage" aria-label="Conceptual WPs editor preview">
+        <div className="product-stage" aria-label="Conceptual WPS editor preview">
           <div className="stage-orbit orbit-one" />
           <div className="stage-orbit orbit-two" />
 
@@ -152,7 +152,7 @@ export default function Home() {
             <em> editing.</em>
           </p>
           <p>
-            WPs separates those responsibilities so clients can confidently manage
+            WPS separates those responsibilities so clients can confidently manage
             information while professionals protect the system around it.
           </p>
         </div>
@@ -161,7 +161,7 @@ export default function Home() {
       <section className="contract-section" id="system">
         <div className="section-shell">
           <div className="section-heading centered-heading">
-            <div className="kicker">The WPs contract</div>
+            <div className="kicker">The WPS contract</div>
             <h2>Four layers. Four clear owners.</h2>
             <p>Freedom where it helps. Guardrails where expertise matters.</p>
           </div>
@@ -197,7 +197,7 @@ export default function Home() {
 
       <section className="section-shell platform-section">
         <div className="platform-visual" aria-hidden="true">
-          <div className="platform-core">WPs</div>
+          <div className="platform-core">WPS</div>
           <div className="platform-node node-runtime"><span>01</span> Runtime</div>
           <div className="platform-node node-modules"><span>02</span> Modules</div>
           <div className="platform-node node-studio"><span>03</span> Studio</div>
@@ -207,8 +207,8 @@ export default function Home() {
           <div className="kicker">More than a plugin</div>
           <h2>The production system above WordPress.</h2>
           <p>
-            The plugin becomes the trusted runtime inside every client site. WPs
-            Studio becomes the agency workspace above it—coordinating blueprints,
+            The plugin becomes the trusted runtime inside every client site. WPS
+            becomes the agency workspace above it—coordinating blueprints,
             modules, releases, permissions, documentation, and eventually agents.
           </p>
           <div className="platform-list">
@@ -230,7 +230,7 @@ export default function Home() {
             <article>
               <div className="model-topline"><span>{`{ }`}</span> Open foundation</div>
               <h3>Your stack. Your modules. Your clients.</h3>
-              <p>Public documentation and tooling for developers who want to build and operate WPs independently.</p>
+              <p>Public documentation and tooling for developers who want to build and operate WPS independently.</p>
               <Link href="/docs/public-platform">Explore the open model →</Link>
             </article>
             <article className="studio-teaser">
@@ -257,7 +257,7 @@ export default function Home() {
           <li className="active"><span>00</span><div><small>Now</small><strong>Definition & validation</strong></div></li>
           <li><span>01</span><div><small>Next</small><strong>Single-site proof</strong></div></li>
           <li><span>02</span><div><small>Then</small><strong>Agency kit</strong></div></li>
-          <li><span>03</span><div><small>Later</small><strong>WPs Studio alpha</strong></div></li>
+          <li><span>03</span><div><small>Later</small><strong>WPS alpha</strong></div></li>
         </ol>
       </section>
 
@@ -267,7 +267,7 @@ export default function Home() {
         <h2>Help us build the system we wish we could hand our clients.</h2>
         <p>
           Challenge the assumptions. Improve the architecture. Bring a client workflow.
-          The open questions are public because the right collaborators will make WPs better.
+          The open questions are public because the right collaborators will make WPS better.
         </p>
         <div className="hero-actions">
           <Link className="button button-primary" href="/docs/open-questions">See where help is needed →</Link>

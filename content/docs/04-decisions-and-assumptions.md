@@ -9,14 +9,14 @@ Use this as an architectural and product decision log. A decision is something w
 **Status:** Accepted, subject to validation  
 **Date:** 2026-08-22
 
-WPs is initially for agencies, freelancers, and developers deliberately building client sites with the system. The client is the primary end user of the editing experience but is not necessarily the software buyer.
+WebProduction Studio (WPS) is initially for agencies, freelancers, and developers deliberately building client sites with the system. The client is the primary end user of the editing experience but is not necessarily the software buyer.
 
 ### D-002 — Universal WordPress compatibility is not the goal
 
 **Status:** Accepted  
 **Date:** 2026-08-22
 
-WPs will define and document a compatibility contract. Unsupported themes, blocks, and page builders will not be made editable through unsafe heuristics.
+WPS will define and document a compatibility contract. Unsupported themes, blocks, and page builders will not be made editable through unsafe heuristics.
 
 ### D-003 — Separate content, composition, presentation, and system design
 
@@ -32,12 +32,12 @@ This separation is the central product model and should guide terminology, schem
 
 WordPress should remain the normal public renderer. Headless support may become an adapter later, but it is not the foundational architecture.
 
-### D-005 — WPs may grow into a SaaS plus local runtime
+### D-005 — WPS may grow into a SaaS plus local runtime
 
 **Status:** Direction accepted; scope unvalidated  
 **Date:** 2026-08-22
 
-The WordPress plugin provides site-local editing and enforcement. WPs Studio provides agency coordination and reusable production leverage across projects.
+The WordPress plugin provides site-local editing and enforcement. WPS provides agency coordination and reusable production leverage across projects.
 
 ### D-006 — The public site must not require continuous SaaS availability
 
@@ -58,14 +58,14 @@ An LLM agent may assemble and modify structured sites through documented abiliti
 **Status:** Direction accepted; licensing and business model unvalidated  
 **Date:** 2026-08-22
 
-WPs should provide public developer documentation and the tools required for professionals to build with the system independently. WPs Studio will be the paid, coordinated experience for teams that want managed blueprints, releases, workflows, governance, and agent tooling. The intended relationship is analogous to an open ecosystem paired with a convenient hosted service, not a crippled local product used only to force SaaS adoption.
+WPS should provide public developer documentation and the tools required for professionals to build with the system independently. The WPS hosted service will be the paid, coordinated experience for teams that want managed blueprints, releases, workflows, governance, and agent tooling. The intended relationship is analogous to an open ecosystem paired with a convenient hosted service, not a crippled local product used only to force SaaS adoption.
 
 ### D-009 — Public home is webproduction.studio
 
 **Status:** Accepted  
 **Date:** 2026-08-22
 
-The `webproduction.studio` domain was acquired for the project. The site will initially serve as the public project home and developer invitation, then grow into the WPs Studio web application. Public documentation and open-system information must remain clearly separable from future account, billing, and private project surfaces.
+The `webproduction.studio` domain was acquired for the project. The site will initially serve as the public project home and developer invitation, then grow into the WPS web application. Public documentation and open-system information must remain clearly separable from future account, billing, and private project surfaces.
 
 ## Assumptions to validate
 
@@ -95,8 +95,8 @@ Using standard entities, block content, metadata, media, permissions, autosaves,
 
 ## Naming notes
 
-- **WPs** — current working shorthand.
-- **WebProduction Studio** — current working expansion; capitalization and spacing are unsettled.
-- The name conveniently references WordPress without necessarily making “WordPress” part of the formal product name.
-- Trademark, searchability, domain availability, pronunciation, and confusion with the plural of WP have not been investigated.
+- **WebProduction Studio** — full product name.
+- **WPS** — approved shorthand after the full name has been established.
+- Do not use **WPs** or **WPS Studio**; the former can read as a WordPress-related “WP” construction, and the latter expands redundantly to “WebProduction Studio Studio.”
+- Public-facing materials should state that WordPress is a registered trademark of the WordPress Foundation and that WebProduction Studio is independent and not affiliated with or endorsed by the Foundation or the WordPress open source project.
 - `webproduction.studio` is owned for the project.

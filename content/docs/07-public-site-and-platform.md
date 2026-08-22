@@ -4,7 +4,7 @@
 
 The project owns `webproduction.studio`.
 
-The public site begins as the canonical project home, explanation, roadmap, and developer invitation. It can later grow into the authenticated WPs Studio application without forcing public documentation behind an account.
+The public site begins as the canonical project home, explanation, roadmap, and developer invitation. It can later grow into the authenticated WebProduction Studio (WPS) application without forcing public documentation behind an account.
 
 ## Information architecture
 
@@ -21,7 +21,7 @@ The public site begins as the canonical project home, explanation, roadmap, and 
 - Contribution and design-partner information
 - Release notes
 
-### Future WPs Studio surface
+### Future WPS surface
 
 - Accounts and organizations
 - Projects and environments
@@ -38,9 +38,9 @@ Public URLs should not depend on an authenticated application shell. The two sur
 
 ### Build independently
 
-Professionals should be able to use the public documentation, local WordPress runtime, schemas, and developer tooling to build WPs-compatible sites without purchasing WPs Studio.
+Professionals should be able to use the public documentation, local WordPress runtime, schemas, and developer tooling to build WPS-compatible sites without purchasing the WPS hosted service.
 
-### Use WPs Studio
+### Use WPS
 
 The hosted product should charge for coordination and operational leverage:
 
@@ -80,4 +80,3 @@ The first site is written primarily for experienced WordPress developers, freela
 - Become design partners or early adopters
 
 The site should be ambitious without implying that unbuilt features already exist. Prefer phrases such as “working thesis,” “building in public,” and “help shape the system.”
-

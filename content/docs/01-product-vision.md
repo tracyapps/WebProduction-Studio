@@ -2,7 +2,7 @@
 
 ## Origin
 
-WPs grows from long experience building WordPress sites, contributing to WordPress, and training clients to manage the sites delivered to them.
+WebProduction Studio (WPS) grows from long experience building WordPress sites, contributing to WordPress, and training clients to manage the sites delivered to them.
 
 The recurring observation is that most clients do not want unlimited design power. They want to change information, publish updates, create pages that remain on-brand, and understand what will happen when they click a control. Existing WordPress editing experiences frequently give them too much responsibility while making basic actions difficult to discover.
 
@@ -118,7 +118,7 @@ Avoid leading with “better WordPress,” which invites a universal comparison 
 
 Working positioning:
 
-> WPs is the professional production system for building WordPress sites clients can actually manage.
+> WPS is the professional production system for building WordPress sites clients can actually manage.
 
 Working client-facing promise:
 
@@ -142,4 +142,3 @@ The editing plugin solves the local site problem. Agencies gain compounding valu
 - Portfolio-wide governance
 
 The SaaS should add coordination and leverage. The WordPress site must remain capable of rendering and serving its content without a continuous SaaS dependency.
-

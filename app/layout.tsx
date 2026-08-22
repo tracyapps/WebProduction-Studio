@@ -14,19 +14,19 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://webproduction.studio'),
-  title: 'WPs — WebProduction Studio',
+  title: 'WebProduction Studio (WPS)',
   description:
     'An open, purpose-driven production system for WordPress agencies, developers, and the clients they serve.',
   icons: { icon: '/favicon.png' },
   openGraph: {
-    title: 'WPs — WebProduction Studio',
+    title: 'WebProduction Studio (WPS)',
     description: 'WordPress sites your clients aren’t afraid to touch.',
     type: 'website',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'WPs — WebProduction Studio' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'WPS — WebProduction Studio' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WPs — WebProduction Studio',
+    title: 'WebProduction Studio (WPS)',
     description: 'WordPress sites your clients aren’t afraid to touch.',
     images: ['/og.png'],
   },

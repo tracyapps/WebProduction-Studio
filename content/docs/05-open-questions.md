@@ -5,10 +5,10 @@ These questions are preserved so enthusiasm does not silently turn hypotheses in
 ## Product and market
 
 - Is the first product sold per agency, per site, per client, or through a combined model?
-- What is the smallest outcome an agency would pay for before WPs Studio exists?
+- What is the smallest outcome an agency would pay for before the WPS hosted service exists?
 - Is the initial wedge client editing, repeatable site production, or the combination?
 - Which agency segment feels the pain most acutely?
-- Which existing tools would an agency replace, and which would WPs integrate with?
+- Which existing tools would an agency replace, and which would WPS integrate with?
 - How much opinionation will agencies welcome before they feel constrained themselves?
 - Is “WordPress” central to the long-term brand or merely the first runtime?
 
@@ -30,7 +30,7 @@ These questions are preserved so enthusiasm does not silently turn hypotheses in
 - How are stable identifiers added without polluting portable content?
 - What is the migration strategy when a module schema changes?
 - How should module dependencies be declared and versioned?
-- How much of the WPs schema should build directly on `block.json` and `theme.json`?
+- How much of the WPS schema should build directly on `block.json` and `theme.json`?
 - How should WordPress patterns and pattern overrides be used without exposing their terminology?
 
 ## WordPress integration
@@ -38,7 +38,7 @@ These questions are preserved so enthusiasm does not silently turn hypotheses in
 - What minimum WordPress and PHP versions should the first release support?
 - Which public `@wordpress/*` packages are stable enough to depend on?
 - How will edit-mode UI remain isolated from arbitrary theme CSS and JavaScript?
-- Can normal Core blocks participate safely, or should the first proof use only WPs modules?
+- Can normal Core blocks participate safely, or should the first proof use only WPS modules?
 - How should classic content be displayed and converted?
 - How will post locking and save conflicts be handled across the front end and native editor?
 - Which SEO, forms, multilingual, membership, and ecommerce integrations matter first?
@@ -46,14 +46,14 @@ These questions are preserved so enthusiasm does not silently turn hypotheses in
 
 ## SaaS architecture
 
-- Which data is authoritative in WPs Studio and which is authoritative on the WordPress site?
-- What works during a WPs Studio outage?
+- Which data is authoritative in the WPS hosted service and which is authoritative on the WordPress site?
+- What works during a WPS hosted-service outage?
 - How are projects, environments, and releases modeled?
 - How are credentials stored, rotated, and revoked?
 - Is site-to-SaaS communication pull-based, push-based, or both?
 - What is the safe rollback unit: configuration release, module release, site revision, or all three?
 - How are locally customized modules reconciled with Studio-managed versions?
-- Does WPs provide hosting or integrate with existing hosts?
+- Does WPS provide hosting or integrate with existing hosts?
 
 ## Developer platform
 
@@ -78,9 +78,8 @@ These questions are preserved so enthusiasm does not silently turn hypotheses in
 ## Business and governance
 
 - Open-source plugin, commercial plugin, hosted-only service, or open-core?
-- Who owns custom modules created in WPs Studio?
+- Who owns custom modules created in WPS?
 - What does export or cancellation look like?
 - What guarantees prevent client-site lock-in from becoming harmful?
 - How are telemetry and client content handled?
 - What support commitment is required when WordPress Core APIs change?
-

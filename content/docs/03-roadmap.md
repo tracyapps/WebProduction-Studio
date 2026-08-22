@@ -24,7 +24,7 @@ Exit evidence:
 
 Goal: validate the hardest local-runtime mechanics on one deliberately built WordPress site.
 
-- WPs edit-mode toggle on the real front end
+- WPS edit-mode toggle on the real front end
 - Stable mapping between supported modules and stored content
 - Inline text, link, and image editing
 - Move, duplicate, remove, and insert
@@ -48,7 +48,7 @@ Explicitly out of scope:
 
 ## Phase 2 — Agency kit
 
-Goal: let an agency use WPs repeatedly without a central SaaS.
+Goal: let an agency use WPS repeatedly without a central SaaS.
 
 - Documented module schema
 - Starter design adapter
@@ -60,7 +60,7 @@ Goal: let an agency use WPs repeatedly without a central SaaS.
 - Upgrade and migration format
 - Developer documentation site
 
-## Phase 3 — WPs Studio alpha
+## Phase 3 — WPS alpha
 
 Goal: add cross-project leverage for a small design-partner group.
 
@@ -74,11 +74,11 @@ Goal: add cross-project leverage for a small design-partner group.
 - Generated client and developer documentation
 - Staging-to-production approval workflow
 
-The site must continue rendering if WPs Studio is unavailable.
+The site must continue rendering if the WPS hosted service is unavailable.
 
 ## Phase 4 — Client operations
 
-Goal: make WPs valuable throughout the client relationship.
+Goal: make WPS valuable throughout the client relationship.
 
 - Reusable content entity management
 - Shared-content scope controls
@@ -124,9 +124,8 @@ The final list should follow evidence from actual client sites, not generic bloc
 - Time for a client to make and publish a routine content change
 - Number of clarification requests during a task
 - Number of accidental design or layout changes
-- Client-reported confidence before and after using WPs
+- Client-reported confidence before and after using WPS
 - Training time per client
 - Agency support time after launch
 - Module reuse across projects
 - Frequency of original-editor escape-hatch use
-

@@ -1,4 +1,4 @@
-# WPs — WebProduction Studio
+# WebProduction Studio (WPS)
 
 The public project home and documentation site for WebProduction Studio.
 

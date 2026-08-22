@@ -4,7 +4,7 @@ export function SiteHeader() {
   return (
     <nav className="nav-shell" aria-label="Primary navigation">
       <Link className="brand" href="/" aria-label="WebProduction Studio home">
-        <span className="brand-mark">WPs</span>
+        <span className="brand-mark">WPS</span>
         <span className="brand-name">WebProduction Studio</span>
       </Link>
 
@@ -16,7 +16,7 @@ export function SiteHeader() {
       </div>
 
       <Link className="nav-cta" href="/docs/open-questions">
-        Help shape WPs <span aria-hidden="true">↗</span>
+        Help shape WPS <span aria-hidden="true">↗</span>
       </Link>
     </nav>
   );

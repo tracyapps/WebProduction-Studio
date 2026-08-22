@@ -2,7 +2,7 @@
 
 ## Recommended direction
 
-Build WPs as a hybrid system:
+Build WebProduction Studio (WPS) as a hybrid system:
 
 - A WordPress plugin provides the local runtime and client editor.
 - WordPress remains the authoritative content and public rendering engine.
@@ -13,7 +13,7 @@ This is intentionally not a conventional headless architecture.
 
 ## System boundaries
 
-### WPs Studio
+### WPS hosted service
 
 The agency-facing SaaS may eventually provide:
 
@@ -29,7 +29,7 @@ The agency-facing SaaS may eventually provide:
 - Agent connections, scoped credentials, and activity logs
 - Cross-site reporting
 
-### WPs Runtime
+### WPS Runtime
 
 The WordPress plugin is responsible for:
 
@@ -41,8 +41,8 @@ The WordPress plugin is responsible for:
 - Capabilities, nonces, autosaves, revisions, and locking
 - Validating content and composition
 - Enforcing locally cached project policy
-- Synchronizing eligible configuration with WPs Studio
-- Falling back safely if WPs Studio is unreachable
+- Synchronizing eligible configuration with WPS
+- Falling back safely if the WPS hosted service is unreachable
 
 ### Design adapter
 
@@ -91,24 +91,24 @@ Likely WordPress representation: custom blocks, preferably dynamically rendered 
 
 Approved presentations of a page module: editorial, split, compact, centered, dark, image-led, and similar intentional choices.
 
-Likely representation: registered block styles or variations, `theme.json`, per-block stylesheets, plus WPs-specific metadata for controls and previews.
+Likely representation: registered block styles or variations, `theme.json`, per-block stylesheets, plus WPS-specific metadata for controls and previews.
 
 ### Composition rules
 
 Rules describing where a module may appear, allowed nesting, quantity limits, required content, and relationships to the page or template.
 
-Likely representation: a WPs schema interpreted by both the WordPress runtime and WPs Studio.
+Likely representation: a WPS schema interpreted by both the WordPress runtime and the WPS hosted service.
 
 ## Editing model
 
 The rendered DOM is a view, not the source of truth.
 
 1. WordPress loads and renders the page normally.
-2. For authorized editors, WPs annotates supported rendered modules with identifiers and metadata.
+2. For authorized editors, WPS annotates supported rendered modules with identifiers and metadata.
 3. The edit-mode application loads the underlying block/entity model.
 4. Inline actions update that model and immediately update the visible page.
 5. Dynamic or complex module previews are requested from WordPress’s authoritative renderer.
-6. WPs serializes and validates the complete content model before saving.
+6. WPS serializes and validates the complete content model before saving.
 
 Do not scrape arbitrary edited DOM back into `post_content`. That would be fragile and would risk invalid block serialization.
 
@@ -117,7 +117,7 @@ Do not scrape arbitrary edited DOM back into `post_content`. That would be fragi
 “Saved” and “public” must be different states.
 
 1. Edits update local state.
-2. WPs periodically creates an authenticated autosave.
+2. WPS periodically creates an authenticated autosave.
 3. The working version is reflected in the editor immediately.
 4. Validation runs continuously and before publication.
 5. “Publish changes” updates the public entity atomically.
@@ -129,7 +129,7 @@ Concurrency protection should include WordPress post locks plus a base revision 
 
 Every rendered item belongs to one of three categories:
 
-1. **Fully supported** — complete WPs editing.
+1. **Fully supported** — complete WPS editing.
 2. **Recognized but limited** — safe basic actions or guided conversion.
 3. **Unsupported** — visible but locked, with an explicit route to the original editor where appropriate.
 
@@ -165,7 +165,7 @@ testimonial-collection/
 
 ## Agent interface
 
-“Connect your LLM agent” is promising if the agent uses WPs as a constrained production API—not as a free-form page builder.
+“Connect your LLM agent” is promising if the agent uses WPS as a constrained production API—not as a free-form page builder.
 
 An agent should be able to:
 
@@ -197,7 +197,7 @@ Every agent action should be attributable, scoped, reviewable, and reversible. H
 
 Primary challenge: accurately mapping nested rendered modules to editable models while isolating the editor UI from theme CSS.
 
-### Scenario B — Custom WPs editor inside wp-admin
+### Scenario B — Custom WPS editor inside wp-admin
 
 Useful for content browsing, new-page composition, settings, and as an alternative accessibility mode. It can reuse public `@wordpress/*` data and editor packages without copying Gutenberg’s application interface.
 
@@ -219,4 +219,3 @@ It can remain a future adapter if an agency deliberately chooses a headless proj
 - Safe behavior when disconnected from the SaaS
 - Versioned module schemas and migrations
 - Explicit editing scope for shared content: “this instance” versus “everywhere”
-

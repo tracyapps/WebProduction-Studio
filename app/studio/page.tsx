@@ -4,8 +4,8 @@ import { SiteFooter } from '@/components/SiteFooter';
 import { SiteHeader } from '@/components/SiteHeader';
 
 export const metadata: Metadata = {
-  title: 'WPs Studio — Hosted by choice',
-  description: 'The future hosted production system for agencies building WPs sites.',
+  title: 'WebProduction Studio — Hosted by choice',
+  description: 'The future hosted production system for agencies building WPS sites.',
 };
 
 const independent = [
@@ -34,7 +34,8 @@ export default function StudioPage() {
         <div className="status-pill"><span className="status-dot" /> Future product surface</div>
         <h1>Open by foundation.<br /><span>Hosted by choice.</span></h1>
         <p>
-          Build with WPs independently, or use WPs Studio when your team wants the
+          Build with the open WPS system independently, or use WebProduction Studio
+          when your team wants the
           complete production environment coordinated for you.
         </p>
       </header>
@@ -45,14 +46,14 @@ export default function StudioPage() {
           <h2>The system belongs in your hands.</h2>
           <p>
             Public specifications and a capable local runtime should let professionals
-            create excellent WPs sites without renting permission from us.
+            create excellent WPS sites without renting permission from us.
           </p>
           <ul>{independent.map((item) => <li key={item}>✓ {item}</li>)}</ul>
           <Link href="/docs/public-platform">Read the platform model →</Link>
         </article>
 
         <article className="model-card hosted-model">
-          <div className="model-topline"><span>✦</span> WPs Studio</div>
+          <div className="model-topline"><span>✦</span> WebProduction Studio</div>
           <h2>Coordination becomes the product.</h2>
           <p>
             Studio adds the cross-project leverage, governance, release management,
