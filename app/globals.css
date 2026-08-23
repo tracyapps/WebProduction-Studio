@@ -69,8 +69,9 @@ main {
 }
 
 .nav-shell {
-  position: relative;
-  z-index: 20;
+  position: sticky;
+  top: 20px;
+  z-index: 40;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -629,6 +630,7 @@ main {
 
 @media (max-width: 760px) {
   .nav-shell {
+    top: 12px;
     grid-template-columns: 1fr auto;
     width: calc(100% - 24px);
     margin-top: 12px;
