@@ -12,6 +12,7 @@ export function SiteHeader() {
         <Link href="/#principles">Principles</Link>
         <Link href="/#system">The system</Link>
         <Link href="/docs">Docs</Link>
+        <Link href="/prototypes">Prototypes</Link>
         <Link href="/studio">Studio</Link>
       </div>
 

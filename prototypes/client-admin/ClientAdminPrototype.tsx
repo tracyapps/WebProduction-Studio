@@ -6,12 +6,13 @@ import {
   ArrowDown,
   ArrowLeft,
   ArrowUp,
-  ArrowsClockwise,
   Briefcase,
   CaretDown,
   ChatCircleDots,
   Check,
+  Copy,
   DotsSixVertical,
+  DotsThreeVertical,
   Eye,
   EyeSlash,
   FloppyDisk,
@@ -27,7 +28,7 @@ import {
   Trash,
   X,
 } from '@phosphor-icons/react';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import styles from './client-admin.module.css';
 
 type EditorSide = 'content' | 'design';
@@ -132,7 +133,7 @@ function moveItem<T>(items: T[], fromIndex: number, toIndex: number) {
 export function ClientAdminPrototype() {
   const [sections, setSections] = useState(INITIAL_SECTIONS);
   const [services, setServices] = useState(INITIAL_SERVICES);
-  const [activeSectionId, setActiveSectionId] = useState('services');
+  const [activeSectionId, setActiveSectionId] = useState<string | null>('services');
   const [expandedServiceId, setExpandedServiceId] = useState<string | null>(null);
   const [editorSide, setEditorSide] = useState<EditorSide>('design');
   const [theme, setTheme] = useState<Theme>('dark');
@@ -143,15 +144,18 @@ export function ClientAdminPrototype() {
   const [imageEmphasis, setImageEmphasis] = useState<EmphasisChoice>('balanced');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [draggedSectionId, setDraggedSectionId] = useState<string | null>(null);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
   const sectionSequence = useRef(0);
   const serviceSequence = useRef(0);
 
-  const activeSection = useMemo(
-    () => sections.find((section) => section.id === activeSectionId) ?? sections[0],
-    [activeSectionId, sections],
-  );
+  const activeSection = sections.find((section) => section.id === activeSectionId) ?? null;
+
+  const activeSectionIndex = activeSection
+    ? sections.findIndex((section) => section.id === activeSection.id)
+    : -1;
 
   const markChanged = useCallback(() => setSaveState('unsaved'), []);
 
@@ -183,7 +187,26 @@ export function ClientAdminPrototype() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [addDialogOpen]);
 
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+
+    const closeMenu = (event: MouseEvent) => {
+      if (!moreMenuRef.current?.contains(event.target as Node)) setMoreMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMoreMenuOpen(false);
+    };
+
+    window.addEventListener('mousedown', closeMenu);
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      window.removeEventListener('mousedown', closeMenu);
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [moreMenuOpen]);
+
   const updateSection = (changes: Partial<PageSection>) => {
+    if (!activeSection) return;
     setSections((current) =>
       current.map((section) =>
         section.id === activeSection.id ? { ...section, ...changes } : section,
@@ -242,7 +265,9 @@ export function ClientAdminPrototype() {
       introduction: 'Add the information your visitors need here.',
     };
     setSections((current) => {
-      const activeIndex = current.findIndex((section) => section.id === activeSection.id);
+      const activeIndex = activeSection
+        ? current.findIndex((section) => section.id === activeSection.id)
+        : current.length - 1;
       const next = [...current];
       next.splice(activeIndex + 1, 0, newSection);
       return next;
@@ -252,6 +277,43 @@ export function ClientAdminPrototype() {
     setAddDialogOpen(false);
     markChanged();
     setToast(`${label} added to the page`);
+  };
+
+  const duplicateActiveSection = () => {
+    if (!activeSection) return;
+    sectionSequence.current += 1;
+    const duplicate: PageSection = {
+      ...activeSection,
+      id: `${activeSection.kind}-copy-${sectionSequence.current}`,
+      label: `${activeSection.label} copy`,
+    };
+    setSections((current) => {
+      const index = current.findIndex((section) => section.id === activeSection.id);
+      const next = [...current];
+      next.splice(index + 1, 0, duplicate);
+      return next;
+    });
+    setActiveSectionId(duplicate.id);
+    setMoreMenuOpen(false);
+    markChanged();
+    setToast(`${activeSection.label} duplicated`);
+  };
+
+  const deleteActiveSection = () => {
+    if (!activeSection) return;
+    setSections((current) => current.filter((section) => section.id !== activeSection.id));
+    setActiveSectionId(null);
+    setMoreMenuOpen(false);
+    markChanged();
+    setToast(`${activeSection.label} removed`);
+  };
+
+  const moveActiveSectionTo = (toIndex: number) => {
+    if (!activeSection || activeSectionIndex < 0 || activeSectionIndex === toIndex) return;
+    setSections((current) => moveItem(current, activeSectionIndex, toIndex));
+    setMoreMenuOpen(false);
+    markChanged();
+    setToast(`${activeSection.label} moved to position ${toIndex + 1}`);
   };
 
   const saveNow = () => {
@@ -275,9 +337,9 @@ export function ClientAdminPrototype() {
       data-theme={theme}
     >
       <header className={styles.taskbar}>
-        <Link className={styles.backLink} href="/docs">
+        <Link className={styles.backLink} href="/prototypes">
           <ArrowLeft aria-hidden="true" size={18} />
-          <span>Back to pages</span>
+          <span>Back to prototypes</span>
         </Link>
         <div className={styles.pageTitle}>Home page</div>
         <div className={styles.taskActions}>
@@ -317,15 +379,28 @@ export function ClientAdminPrototype() {
       </header>
 
       <aside className={styles.pageMap} aria-label="Page map">
-        <div>
-          <h2>Page map</h2>
-          <p>Drag to reorder</p>
+        <div className={styles.pageMapHeading}>
+          <div>
+            <h2>Page map</h2>
+            <p>Drag to reorder</p>
+          </div>
+          <button
+            type="button"
+            className={styles.viewPageButton}
+            onClick={() => {
+              setActiveSectionId(null);
+              setMoreMenuOpen(false);
+            }}
+            aria-pressed={activeSectionId === null}
+          >
+            View whole page
+          </button>
         </div>
         <ol className={styles.sectionOutline}>
           {sections.map((section, index) => (
             <li
               key={section.id}
-              className={section.id === activeSection.id ? styles.activeOutlineItem : ''}
+              className={section.id === activeSectionId ? styles.activeOutlineItem : ''}
               draggable
               onDragStart={() => setDraggedSectionId(section.id)}
               onDragEnd={() => setDraggedSectionId(null)}
@@ -335,8 +410,11 @@ export function ClientAdminPrototype() {
               <button
                 className={styles.outlineSelect}
                 type="button"
-                onClick={() => setActiveSectionId(section.id)}
-                aria-current={section.id === activeSection.id ? 'true' : undefined}
+                onClick={() => {
+                  setActiveSectionId((current) => (current === section.id ? null : section.id));
+                  setMoreMenuOpen(false);
+                }}
+                aria-current={section.id === activeSectionId ? 'true' : undefined}
               >
                 <span className={styles.outlineNode} aria-hidden="true" />
                 <DotsSixVertical className={styles.dragIcon} aria-hidden="true" size={18} weight="bold" />
@@ -369,83 +447,134 @@ export function ClientAdminPrototype() {
         </button>
       </aside>
 
-      <section className={styles.editWorkspace} aria-labelledby="editor-title">
-        <div className={styles.editorHeading}>
-          <h1 id="editor-title">Edit {activeSection.label}</h1>
-          <p>Update the content and appearance of this section.</p>
-        </div>
+      <section className={styles.editWorkspace} aria-label="Section editor">
+        {activeSection ? (
+          <section
+            className={styles.editorCard}
+            data-side={editorSide}
+            aria-label={`${activeSection.label} ${editorSide} editor`}
+          >
+            <header className={styles.editorCardHeader}>
+              <div className={styles.sectionIdentity}>
+                <span>Editing section</span>
+                <h1 id="editor-title">{activeSection.label}</h1>
+              </div>
 
-        <div className={styles.sideSwitch} aria-label="Editor side">
-          <ArrowsClockwise aria-hidden="true" size={24} />
-          <div role="group" aria-label="Choose what to edit">
-            <button
-              type="button"
-              className={editorSide === 'content' ? styles.activeSwitch : ''}
-              onClick={() => setEditorSide('content')}
-              aria-pressed={editorSide === 'content'}
-            >
-              Content
-            </button>
-            <button
-              type="button"
-              className={editorSide === 'design' ? styles.activeSwitch : ''}
-              onClick={() => setEditorSide('design')}
-              aria-pressed={editorSide === 'design'}
-            >
-              Design
-            </button>
+              <div className={styles.editorHeaderActions}>
+                <div className={styles.sideSwitch} role="group" aria-label="Choose what to edit">
+                  <button
+                    type="button"
+                    className={editorSide === 'content' ? styles.activeSwitch : ''}
+                    onClick={() => setEditorSide('content')}
+                    aria-pressed={editorSide === 'content'}
+                  >
+                    Content
+                  </button>
+                  <button
+                    type="button"
+                    className={editorSide === 'design' ? styles.activeSwitch : ''}
+                    onClick={() => setEditorSide('design')}
+                    aria-pressed={editorSide === 'design'}
+                  >
+                    Design
+                  </button>
+                </div>
+
+                <div className={styles.moreMenu} ref={moreMenuRef}>
+                  <button
+                    type="button"
+                    className={styles.moreMenuButton}
+                    onClick={() => setMoreMenuOpen((open) => !open)}
+                    aria-expanded={moreMenuOpen}
+                    aria-haspopup="menu"
+                    aria-label={`More actions for ${activeSection.label}`}
+                  >
+                    <DotsThreeVertical aria-hidden="true" size={20} weight="bold" />
+                  </button>
+                  {moreMenuOpen ? (
+                    <div className={styles.moreMenuPopover} role="menu">
+                      <button type="button" role="menuitem" onClick={duplicateActiveSection}>
+                        <Copy aria-hidden="true" size={17} />
+                        Duplicate section
+                      </button>
+                      <label>
+                        <span>Move to position</span>
+                        <select
+                          value={activeSectionIndex}
+                          onChange={(event) => moveActiveSectionTo(Number(event.target.value))}
+                        >
+                          {sections.map((section, index) => (
+                            <option key={section.id} value={index}>
+                              {index + 1} · {section.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className={styles.deleteMenuItem}
+                        onClick={deleteActiveSection}
+                      >
+                        <Trash aria-hidden="true" size={17} />
+                        Delete section
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </header>
+
+            {editorSide === 'content' ? (
+              <ContentEditor
+                section={activeSection}
+                services={services}
+                expandedServiceId={expandedServiceId}
+                onSectionChange={updateSection}
+                onServiceChange={updateService}
+                onToggleService={(id) => setExpandedServiceId((current) => (current === id ? null : id))}
+                onReorderService={reorderService}
+                onAddService={() => {
+                  serviceSequence.current += 1;
+                  const id = `service-new-${serviceSequence.current}`;
+                  setServices((current) => [
+                    ...current,
+                    { id, title: 'New service', description: 'Describe this service for your visitors.' },
+                  ]);
+                  setExpandedServiceId(id);
+                  markChanged();
+                }}
+                onRemoveService={(id) => {
+                  setServices((current) => current.filter((service) => service.id !== id));
+                  markChanged();
+                }}
+                onApply={applyChanges}
+              />
+            ) : (
+              <DesignEditor
+                layout={layout}
+                colorTreatment={colorTreatment}
+                imageEmphasis={imageEmphasis}
+                onLayoutChange={(value) => { setLayout(value); markChanged(); }}
+                onColorChange={(value) => { setColorTreatment(value); markChanged(); }}
+                onEmphasisChange={(value) => { setImageEmphasis(value); markChanged(); }}
+                onApply={applyChanges}
+              />
+            )}
+          </section>
+        ) : (
+          <div className={styles.wholePageState}>
+            <span>Whole-page preview</span>
+            <h1>No section selected</h1>
+            <p>The preview is showing the complete page without dimming or edit outlines. Choose a section from the page map when you’re ready to focus.</p>
           </div>
-        </div>
-
-        <section
-          key={`${activeSection.id}-${editorSide}`}
-          className={styles.editorCard}
-          data-side={editorSide}
-          aria-label={`${activeSection.label} ${editorSide} editor`}
-        >
-          {editorSide === 'content' ? (
-            <ContentEditor
-              section={activeSection}
-              services={services}
-              expandedServiceId={expandedServiceId}
-              onSectionChange={updateSection}
-              onServiceChange={updateService}
-              onToggleService={(id) => setExpandedServiceId((current) => (current === id ? null : id))}
-              onReorderService={reorderService}
-              onAddService={() => {
-                serviceSequence.current += 1;
-                const id = `service-new-${serviceSequence.current}`;
-                setServices((current) => [
-                  ...current,
-                  { id, title: 'New service', description: 'Describe this service for your visitors.' },
-                ]);
-                setExpandedServiceId(id);
-                markChanged();
-              }}
-              onRemoveService={(id) => {
-                setServices((current) => current.filter((service) => service.id !== id));
-                markChanged();
-              }}
-              onApply={applyChanges}
-            />
-          ) : (
-            <DesignEditor
-              layout={layout}
-              colorTreatment={colorTreatment}
-              imageEmphasis={imageEmphasis}
-              onLayoutChange={(value) => { setLayout(value); markChanged(); }}
-              onColorChange={(value) => { setColorTreatment(value); markChanged(); }}
-              onEmphasisChange={(value) => { setImageEmphasis(value); markChanged(); }}
-              onApply={applyChanges}
-            />
-          )}
-        </section>
+        )}
       </section>
 
       {previewVisible ? (
         <SitePreview
           sections={sections}
-          activeSectionId={activeSection.id}
+          activeSectionId={activeSectionId}
           services={services}
           layout={layout}
           colorTreatment={colorTreatment}
@@ -715,7 +844,7 @@ function CardFooter({ actionLabel, onApply }: { actionLabel: string; onApply: ()
 
 interface SitePreviewProps {
   sections: PageSection[];
-  activeSectionId: string;
+  activeSectionId: string | null;
   services: ServiceItem[];
   layout: LayoutChoice;
   colorTreatment: ColorChoice;
@@ -739,7 +868,7 @@ function SitePreview({
           <nav aria-label="Preview website navigation"><span>Services</span><span>About</span><span>Work</span><span>Contact</span></nav>
           <button type="button">Get in touch</button>
         </div>
-        <div className={styles.sitePage}>
+        <div className={styles.sitePage} data-has-selection={activeSectionId !== null}>
           {sections.map((section) => {
             const active = section.id === activeSectionId;
             return (

@@ -237,10 +237,35 @@
   letter-spacing: -0.02em;
 }
 
-.pageMap > div > p {
+.pageMapHeading {
+  display: grid;
+  gap: 12px;
+}
+
+.pageMapHeading p {
   margin: 7px 0 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.viewPageButton {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.viewPageButton:hover,
+.viewPageButton[aria-pressed='true'] {
+  border-color: var(--cyan);
+  background: color-mix(in srgb, var(--panel-soft) 82%, var(--cyan) 7%);
+  color: var(--text);
 }
 
 .sectionOutline {
@@ -392,31 +417,10 @@
   justify-self: center;
 }
 
-.editorHeading h1 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 620;
-  letter-spacing: -0.035em;
-}
-
-.editorHeading p {
-  margin: 7px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
 .sideSwitch {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin: 28px 8px 24px;
-  color: var(--muted);
-}
-
-.sideSwitch > div {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  width: 296px;
+  width: 250px;
   padding: 4px;
   border: 1px solid var(--line-strong);
   border-radius: 11px;
@@ -424,7 +428,7 @@
 }
 
 .sideSwitch button {
-  min-height: 44px;
+  min-height: 38px;
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -441,7 +445,7 @@
 }
 
 .editorCard {
-  min-height: clamp(670px, calc(100vh - 254px), 810px);
+  min-height: clamp(670px, calc(100vh - 118px), 930px);
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 22px;
@@ -449,23 +453,179 @@
     linear-gradient(var(--panel), var(--panel)) padding-box,
     linear-gradient(135deg, var(--cyan), rgba(83, 153, 255, 0.65) 52%, var(--lime)) border-box;
   box-shadow: 0 30px 70px var(--shadow), inset 0 1px rgba(255, 255, 255, 0.025);
-  transform-origin: center;
-  animation: cardFlipIn 430ms cubic-bezier(0.2, 0.78, 0.2, 1);
-}
-
-@keyframes cardFlipIn {
-  0% { opacity: 0.2; transform: perspective(1200px) rotateY(78deg) scale(0.985); }
-  100% { opacity: 1; transform: perspective(1200px) rotateY(0) scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .editorCard { animation: none; }
   .prototype *, .prototype *::before, .prototype *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}
+
+.editorCardHeader {
+  position: sticky;
+  top: -26px;
+  z-index: 12;
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 20px 16px 26px;
+  border-bottom: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--panel-strong) 92%, transparent);
+  box-shadow: 0 12px 30px rgba(0, 6, 20, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.sectionIdentity {
+  min-width: 0;
+}
+
+.sectionIdentity > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sectionIdentity h1 {
+  overflow: hidden;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 680;
+  letter-spacing: -0.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editorHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.moreMenu {
+  position: relative;
+}
+
+.moreMenuButton {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--panel-soft) 78%, transparent);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.moreMenuButton:hover,
+.moreMenuButton[aria-expanded='true'] {
+  border-color: var(--cyan);
+  background: color-mix(in srgb, var(--panel-soft) 85%, var(--cyan) 8%);
+}
+
+.moreMenuPopover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  width: 236px;
+  overflow: hidden;
+  padding: 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--panel-strong);
+  box-shadow: 0 22px 56px rgba(0, 4, 16, 0.46);
+}
+
+.moreMenuPopover > button {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.moreMenuPopover > button:hover {
+  background: color-mix(in srgb, var(--panel-soft) 84%, var(--cyan) 7%);
+}
+
+.moreMenuPopover label {
+  display: grid;
+  gap: 7px;
+  margin: 5px 0;
+  padding: 10px;
+  border-block: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.moreMenuPopover select {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 7px;
+  background: var(--field);
+  color: var(--text);
+  font-size: 12px;
+  text-transform: none;
+}
+
+.moreMenuPopover .deleteMenuItem {
+  color: #ffabb2;
+}
+
+.wholePageState {
+  display: grid;
+  min-height: calc(100vh - 132px);
+  place-content: center;
+  padding: 48px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--panel) 54%, transparent);
+  text-align: center;
+}
+
+.wholePageState > span {
+  color: var(--lime);
+  font-size: 10px;
+  font-weight: 680;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.wholePageState h1 {
+  margin: 12px 0 10px;
+  font-size: 25px;
+  letter-spacing: -0.04em;
+}
+
+.wholePageState p {
+  max-width: 460px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .cardBody {
   display: flex;
-  min-height: clamp(670px, calc(100vh - 254px), 810px);
+  min-height: clamp(582px, calc(100vh - 206px), 842px);
   flex-direction: column;
   padding: 30px 28px 0;
 }
@@ -870,9 +1030,14 @@
 
 .previewSection {
   position: relative;
+  opacity: 1;
+  filter: none;
+  transition: opacity 220ms ease, filter 220ms ease;
+}
+
+.sitePage[data-has-selection='true'] .previewSection {
   opacity: 0.25;
   filter: grayscale(0.4);
-  transition: opacity 220ms ease, filter 220ms ease;
 }
 
 .activePreviewSection {
@@ -1318,6 +1483,9 @@
   .taskActions .saveStatus { order: 4; width: 100%; }
   .layoutChoices, .sectionChoices { grid-template-columns: 1fr; }
   .choiceRow > div:last-child { grid-template-columns: 1fr; }
+  .editorCardHeader { align-items: stretch; flex-direction: column; gap: 13px; padding: 16px 18px; }
+  .editorHeaderActions { width: 100%; }
+  .sideSwitch { width: 100%; }
   .cardBody { padding: 24px 18px 0; }
   .cardFooter { margin-inline: -18px; padding-inline: 18px; }
   .serviceSummary { grid-template-columns: 18px 20px minmax(0, 1fr); }
