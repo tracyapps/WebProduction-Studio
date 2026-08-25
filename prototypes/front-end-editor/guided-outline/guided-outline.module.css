@@ -1,0 +1,765 @@
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: #0a0d10;
+}
+
+/* Top bar (shared visual language with the inline-canvas variant) */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 60px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10, 13, 16, 0.92);
+  backdrop-filter: blur(14px);
+}
+
+.backLink {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  color: #a7ada7;
+  font-size: 12px;
+}
+
+.backLink:hover {
+  color: white;
+}
+
+.pageTitle {
+  flex: none;
+  padding-right: 18px;
+  border-right: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.topbarActions {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modeSwitch {
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.modeSwitch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 7px;
+  color: #8d938d;
+  font-size: 11.5px;
+  font-weight: 560;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.modeActive {
+  background: rgba(185, 255, 102, 0.12);
+  color: #eaffd4 !important;
+}
+
+.saveStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9aa19a;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 10px rgba(185, 255, 102, 0.7);
+}
+
+.statusDot[data-state='unsaved'] {
+  background: #ffc861;
+  box-shadow: 0 0 10px rgba(255, 200, 97, 0.6);
+}
+
+.statusDot[data-state='saving'] {
+  background: #78e8ff;
+  box-shadow: 0 0 10px rgba(120, 232, 255, 0.6);
+  animation: blink 900ms ease-in-out infinite;
+}
+
+.publishButton {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(100deg, var(--lime), var(--cyan) 130%);
+  color: #0b1205;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.publishButton:hover {
+  filter: brightness(1.06);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Body layout: persistent rail + canvas stage */
+.body {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  flex: 1;
+  align-items: start;
+}
+
+.rail {
+  position: sticky;
+  top: 60px;
+  min-width: 0;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  padding: 20px 16px;
+  border-right: 1px solid var(--line);
+}
+
+.railHeading {
+  margin-bottom: 14px;
+}
+
+.railHeading h2 {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 640;
+}
+
+.railHeading p {
+  margin: 3px 0 0;
+  color: #767c76;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.rail ol {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.rail li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 3px 3px 3px 8px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+}
+
+.railActive {
+  border-color: rgba(120, 232, 255, 0.28) !important;
+  background: rgba(120, 232, 255, 0.08);
+}
+
+.rail li > button:first-child {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 0;
+  color: #c7ccc6;
+  font-size: 12px;
+  text-align: left;
+}
+
+.railActive > button:first-child {
+  color: #dff8ff;
+  font-weight: 620;
+}
+
+.railNode {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: #4b514b;
+}
+
+.railActive .railNode {
+  background: var(--cyan);
+  box-shadow: 0 0 8px rgba(120, 232, 255, 0.7);
+}
+
+.railRowActions {
+  display: flex;
+  gap: 2px;
+}
+
+.railRowActions button {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 6px;
+  color: #767c76;
+}
+
+.railRowActions button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.railRowActions button:disabled {
+  opacity: 0.25;
+}
+
+.railAddButton {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: #9aa19a;
+  font-size: 11px;
+  font-weight: 560;
+}
+
+.railAddButton:hover {
+  border-color: rgba(185, 255, 102, 0.4);
+  color: #eaffd4;
+}
+
+/* Canvas stage */
+.canvasStage {
+  position: relative;
+  min-width: 0;
+  padding: 36px 380px 90px 28px;
+}
+
+.canvasFrame {
+  width: min(760px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+}
+
+.sectionShell {
+  position: relative;
+  outline: 1px dashed transparent;
+  outline-offset: -1px;
+  transition: outline-color 120ms ease;
+}
+
+.sectionShell:hover {
+  outline-color: rgba(120, 232, 255, 0.4);
+  cursor: pointer;
+}
+
+.sectionSelected {
+  z-index: 2;
+  outline: 2px solid var(--cyan) !important;
+  outline-offset: -2px;
+}
+
+.sectionShell:focus-visible {
+  outline: 2px solid var(--lime) !important;
+  outline-offset: -2px;
+}
+
+.sectionChip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  pointer-events: none;
+}
+
+.sectionShell:hover .sectionChip,
+.sectionSelected .sectionChip {
+  background: rgba(20, 24, 28, 0.86);
+  color: #eef2ea;
+  opacity: 1;
+}
+
+/* Anchored drawer */
+.drawer {
+  position: absolute;
+  left: calc(min(760px, 100%) + 16px);
+  z-index: 6;
+  width: 340px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: rgba(14, 18, 22, 0.97);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(20px);
+}
+
+.drawer::before {
+  position: absolute;
+  top: 20px;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  background: rgba(14, 18, 22, 0.97);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  transform: rotate(45deg);
+  content: '';
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: #eef2ea;
+  font-size: 13px;
+  font-weight: 640;
+}
+
+.drawerHeader button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 7px;
+  color: #9aa19a;
+}
+
+.drawerHeader button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.drawerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tabSwitch {
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tabSwitch button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: #9aa19a;
+  font-size: 11px;
+  font-weight: 570;
+}
+
+.tabActive {
+  background: linear-gradient(100deg, var(--lime), var(--cyan) 140%);
+  color: #0b1205 !important;
+}
+
+.drawerToolActions {
+  display: flex;
+  gap: 2px;
+}
+
+.drawerToolActions button {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 7px;
+  color: #9aa19a;
+}
+
+.drawerToolActions button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.drawerToolActions button:disabled {
+  opacity: 0.3;
+}
+
+.drawerBody {
+  display: grid;
+  gap: 12px;
+  max-height: min(58vh, 520px);
+  overflow-y: auto;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field span {
+  color: #8d938d;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field textarea {
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #eef2ea;
+  font: inherit;
+  font-size: 12.5px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: rgba(120, 232, 255, 0.5);
+  background: rgba(120, 232, 255, 0.06);
+}
+
+.subheading {
+  display: block;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: #8d938d;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.serviceFields {
+  display: grid;
+  gap: 14px;
+}
+
+.serviceFieldGroup {
+  display: grid;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.popoverGroup {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.popoverGroup legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: #8d938d;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.choiceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.choiceRow button {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: #c7ccc6;
+  font-size: 11px;
+}
+
+.choiceActive {
+  border-color: rgba(120, 232, 255, 0.5) !important;
+  background: rgba(120, 232, 255, 0.12);
+  color: #dff8ff !important;
+}
+
+.popoverHint {
+  margin: 2px 0 0;
+  color: #767c76;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.drawerApplyRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.drawerApplyRow button {
+  padding: 8px 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: #d5d9d4;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.drawerApplyRow button:disabled {
+  opacity: 0.35;
+}
+
+.applyButton {
+  border: 0 !important;
+  background: linear-gradient(100deg, var(--lime), var(--cyan) 140%);
+  color: #0b1205 !important;
+}
+
+/* Insert dialog (shared visual pattern with the inline-canvas variant) */
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 7, 8, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.insertDialog {
+  width: min(460px, 100%);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #0e1116;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+}
+
+.dialogHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.dialogHeading h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 640;
+}
+
+.dialogHeading p {
+  margin: 6px 0 0;
+  color: #9aa19a;
+  font-size: 12px;
+}
+
+.dialogHeading button {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  place-items: center;
+  border-radius: 8px;
+  color: #9aa19a;
+}
+
+.dialogHeading button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.sectionChoices {
+  display: grid;
+  gap: 8px;
+}
+
+.sectionChoices button {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: left;
+}
+
+.sectionChoices button:hover {
+  border-color: rgba(185, 255, 102, 0.4);
+  background: rgba(185, 255, 102, 0.06);
+}
+
+.sectionChoices span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sectionChoices small {
+  display: block;
+  margin-top: 3px;
+  color: #9aa19a;
+  font-size: 11px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(185, 255, 102, 0.3);
+  border-radius: 12px;
+  background: #10150c;
+  color: #eaffd4;
+  font-size: 12.5px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 980px) {
+  .canvasStage {
+    padding-right: 28px;
+  }
+
+  .drawer {
+    position: fixed;
+    top: auto !important;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    width: auto;
+    max-height: 70vh;
+  }
+
+  .drawer::before {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    gap: 10px;
+    padding: 0 12px;
+  }
+
+  .topbarActions {
+    gap: 6px;
+  }
+
+  .modeSwitch button {
+    padding: 9px;
+  }
+
+  .modeSwitch span {
+    display: none;
+  }
+
+  .publishButton {
+    padding: 9px 12px;
+  }
+
+  .body {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    position: sticky;
+    top: 60px;
+    z-index: 20;
+    height: auto;
+    padding: 12px 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    background: rgba(10, 13, 16, 0.94);
+  }
+
+  .railHeading {
+    display: none;
+  }
+
+  .rail ol {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 0;
+    overflow-x: auto;
+  }
+
+  .rail li {
+    flex: none;
+  }
+
+  .railRowActions,
+  .railAddButton {
+    display: none;
+  }
+
+  .pageTitle {
+    display: none;
+  }
+
+  .saveStatus {
+    display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  .backLink span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusDot[data-state='saving'] {
+    animation: none;
+  }
+}

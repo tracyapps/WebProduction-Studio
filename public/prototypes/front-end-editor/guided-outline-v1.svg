@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="title desc">
+  <title id="title">Guided outline prototype preview</title>
+  <desc id="desc">An always-visible outline rail beside the page, with a panel anchored to the selected section.</desc>
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1116"/>
+      <stop offset="1" stop-color="#07090b"/>
+    </linearGradient>
+    <linearGradient id="swatch2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d8ddd1"/>
+      <stop offset="1" stop-color="#aab29b"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bg2)"/>
+
+  <!-- top bar -->
+  <rect x="0" y="0" width="800" height="46" fill="#0a0d10"/>
+  <rect x="0" y="45" width="800" height="1" fill="rgba(255,255,255,0.09)"/>
+  <rect x="28" y="14" width="80" height="18" rx="9" fill="rgba(185,255,102,0.14)" stroke="rgba(185,255,102,0.35)"/>
+  <text x="68" y="27" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#eaffd4">Editing</text>
+  <rect x="676" y="12" width="96" height="22" rx="7" fill="#b9ff66"/>
+  <text x="724" y="27" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#0b1205">Publish</text>
+
+  <!-- persistent rail -->
+  <rect x="0" y="46" width="128" height="404" fill="#0a0d10"/>
+  <rect x="128" y="46" width="1" height="404" fill="rgba(255,255,255,0.09)"/>
+  <text x="20" y="76" font-family="Arial, sans-serif" font-size="9" font-weight="700" fill="#eef2ea">Page outline</text>
+  <g font-family="Arial, sans-serif" font-size="9" fill="#c7ccc6">
+    <rect x="16" y="92" width="96" height="22" rx="7" fill="transparent"/>
+    <circle cx="26" cy="103" r="3" fill="#4b514b"/>
+    <text x="36" y="106">Hero</text>
+
+    <rect x="16" y="120" width="96" height="22" rx="7" fill="rgba(120,232,255,0.1)" stroke="rgba(120,232,255,0.3)"/>
+    <circle cx="26" cy="131" r="3" fill="#78e8ff"/>
+    <text x="36" y="134" fill="#dff8ff">Services</text>
+
+    <rect x="16" y="148" width="96" height="22" rx="7" fill="transparent"/>
+    <circle cx="26" cy="159" r="3" fill="#4b514b"/>
+    <text x="36" y="162">Testimonials</text>
+
+    <rect x="16" y="176" width="96" height="22" rx="7" fill="transparent"/>
+    <circle cx="26" cy="187" r="3" fill="#4b514b"/>
+    <text x="36" y="190">Contact</text>
+  </g>
+  <rect x="16" y="214" width="96" height="20" rx="8" fill="none" stroke="rgba(255,255,255,0.14)" stroke-dasharray="3 3"/>
+  <text x="64" y="228" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#9aa19a">+ Add section</text>
+
+  <!-- page card -->
+  <rect x="156" y="76" width="368" height="340" rx="16" fill="#ffffff"/>
+  <rect x="156" y="76" width="368" height="34" rx="16" fill="#ffffff"/>
+  <text x="176" y="97" font-family="Georgia, serif" font-size="12" font-weight="700" fill="#161a1e">Acme Co.</text>
+  <rect x="456" y="86" width="52" height="14" rx="5" fill="#161a1e"/>
+
+  <rect x="176" y="130" width="150" height="8" rx="4" fill="#c9d3bd"/>
+  <rect x="176" y="146" width="190" height="16" rx="4" fill="#1d2318"/>
+  <rect x="176" y="170" width="130" height="7" rx="3.5" fill="#9aa3a9"/>
+  <rect x="176" y="188" width="70" height="18" rx="6" fill="#161a1e"/>
+
+  <rect x="156" y="228" width="368" height="150" fill="#ffffff"/>
+  <rect x="158" y="230" width="364" height="146" fill="none" stroke="#78e8ff" stroke-width="2.5"/>
+  <rect x="176" y="266" width="120" height="8" rx="4" fill="#1d2318"/>
+  <rect x="176" y="290" width="104" height="66" rx="9" fill="#f4f5f0" stroke="#e3e6de"/>
+  <rect x="288" y="290" width="104" height="66" rx="9" fill="#f4f5f0" stroke="#e3e6de"/>
+  <rect x="400" y="290" width="104" height="66" rx="9" fill="#f4f5f0" stroke="#e3e6de"/>
+
+  <!-- anchored panel -->
+  <path d="M 522 250 l 14 14 l -14 14 z" fill="rgba(14,18,22,0.97)" stroke="rgba(255,255,255,0.14)"/>
+  <rect x="534" y="238" width="230" height="150" rx="14" fill="rgba(14,18,22,0.97)" stroke="rgba(255,255,255,0.14)"/>
+  <text x="552" y="260" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#eef2ea">Services</text>
+  <rect x="552" y="272" width="60" height="18" rx="6" fill="rgba(185,255,102,0.85)"/>
+  <text x="582" y="285" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#0b1205">Content</text>
+  <rect x="618" y="272" width="52" height="18" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)"/>
+  <text x="644" y="285" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#c7ccc6">Design</text>
+  <rect x="552" y="304" width="196" height="7" rx="3.5" fill="rgba(255,255,255,0.09)"/>
+  <rect x="552" y="320" width="196" height="7" rx="3.5" fill="rgba(255,255,255,0.09)"/>
+  <rect x="552" y="336" width="130" height="7" rx="3.5" fill="rgba(255,255,255,0.09)"/>
+  <rect x="618" y="358" width="50" height="18" rx="6" fill="rgba(255,255,255,0.06)"/>
+  <rect x="672" y="358" width="76" height="18" rx="6" fill="url(#swatch2)"/>
+</svg>

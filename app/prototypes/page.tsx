@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 
 const prototypes = [
   {
+    id: 'client-admin-v1',
     title: 'Client page editor',
     version: 'Version 1',
     variation: 'Baseline interaction model',
@@ -24,6 +25,32 @@ const prototypes = [
     tags: ['Client experience', 'Page editing', 'Interactive'],
     href: '/prototypes/client-admin',
     image: '/prototypes/client-admin/client-editor-v1.webp',
+  },
+  {
+    id: 'front-end-editor-inline-canvas-v1',
+    title: 'Front-end page editor',
+    version: 'Version 1',
+    variation: 'Inline canvas — on-page editing',
+    status: 'Active research prototype',
+    updated: 'August 25, 2026',
+    description:
+      'Editing happens directly on the rendered page. A floating toolbar attaches to whichever section is selected, text edits happen in place, and design changes apply immediately — no separate sidebar or preview pane.',
+    tags: ['Front-end editing', 'Minimal chrome', 'Interactive'],
+    href: '/prototypes/front-end-editor/inline-canvas',
+    image: '/prototypes/front-end-editor/inline-canvas-v1.svg',
+  },
+  {
+    id: 'front-end-editor-guided-outline-v1',
+    title: 'Front-end page editor',
+    version: 'Version 1',
+    variation: 'Guided outline — anchored panel',
+    status: 'Active research prototype',
+    updated: 'August 25, 2026',
+    description:
+      'An always-visible page outline sits beside the real page. Selecting a section opens a panel anchored to it, and design changes preview as a draft until you deliberately apply them.',
+    tags: ['Front-end editing', 'Always-visible outline', 'Interactive'],
+    href: '/prototypes/front-end-editor/guided-outline',
+    image: '/prototypes/front-end-editor/guided-outline-v1.svg',
   },
 ];
 
@@ -59,13 +86,18 @@ export default function PrototypesPage() {
 
         <div className={styles.grid}>
           {prototypes.map((prototype) => (
-            <article className={styles.card} key={`${prototype.title}-${prototype.version}`}>
-              <Link className={styles.thumbnail} href={prototype.href} aria-label={`Open ${prototype.title}, ${prototype.version}`}>
+            <article className={styles.card} key={prototype.id}>
+              <Link
+                className={styles.thumbnail}
+                href={prototype.href}
+                aria-label={`Open ${prototype.title}, ${prototype.version} — ${prototype.variation}`}
+              >
                 <Image
                   src={prototype.image}
-                  alt={`${prototype.title} interface preview`}
+                  alt={`${prototype.title} interface preview — ${prototype.variation}`}
                   fill
                   sizes="(max-width: 760px) calc(100vw - 40px), 720px"
+                  unoptimized={prototype.image.endsWith('.svg')}
                   priority
                 />
                 <span className={styles.versionBadge}>{prototype.version}</span>

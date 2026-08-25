@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-labelledby="title desc">
+  <title id="title">Inline canvas prototype preview</title>
+  <desc id="desc">A page with a floating toolbar pinned to a highlighted section, and no visible sidebar.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d1116"/>
+      <stop offset="1" stop-color="#07090b"/>
+    </linearGradient>
+    <linearGradient id="swatch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d8ddd1"/>
+      <stop offset="1" stop-color="#aab29b"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bg)"/>
+
+  <!-- top bar -->
+  <rect x="0" y="0" width="800" height="46" fill="#0a0d10"/>
+  <rect x="0" y="45" width="800" height="1" fill="rgba(255,255,255,0.09)"/>
+  <rect x="28" y="14" width="80" height="18" rx="9" fill="rgba(185,255,102,0.14)" stroke="rgba(185,255,102,0.35)"/>
+  <text x="68" y="27" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#eaffd4">Editing</text>
+  <rect x="676" y="12" width="96" height="22" rx="7" fill="#b9ff66"/>
+  <text x="724" y="27" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#0b1205">Publish</text>
+
+  <!-- page card -->
+  <rect x="170" y="76" width="460" height="340" rx="16" fill="#ffffff"/>
+
+  <!-- fake nav -->
+  <rect x="170" y="76" width="460" height="34" rx="16" fill="#ffffff"/>
+  <text x="192" y="97" font-family="Georgia, serif" font-size="12" font-weight="700" fill="#161a1e">Acme Co.</text>
+  <rect x="560" y="86" width="52" height="14" rx="5" fill="#161a1e"/>
+
+  <!-- hero block -->
+  <rect x="192" y="130" width="180" height="8" rx="4" fill="#c9d3bd"/>
+  <rect x="192" y="146" width="220" height="16" rx="4" fill="#1d2318"/>
+  <rect x="192" y="170" width="150" height="7" rx="3.5" fill="#9aa3a9"/>
+  <rect x="192" y="188" width="70" height="18" rx="6" fill="#161a1e"/>
+  <rect x="420" y="128" width="160" height="72" rx="10" fill="url(#swatch)"/>
+
+  <!-- selected section (services) -->
+  <rect x="170" y="228" width="460" height="150" fill="#ffffff"/>
+  <rect x="172" y="230" width="456" height="146" fill="none" stroke="#78e8ff" stroke-width="2.5"/>
+  <rect x="182" y="238" width="72" height="15" rx="4" fill="rgba(20,24,28,0.85)"/>
+  <text x="192" y="248" font-family="Arial, sans-serif" font-size="8" fill="#eef2ea" letter-spacing="0.5">SERVICES</text>
+
+  <rect x="192" y="266" width="130" height="8" rx="4" fill="#1d2318"/>
+  <g>
+    <rect x="192" y="290" width="130" height="66" rx="9" fill="#f4f5f0" stroke="#e3e6de"/>
+    <rect x="336" y="290" width="130" height="66" rx="9" fill="#f4f5f0" stroke="#e3e6de"/>
+    <rect x="480" y="290" width="130" height="66" rx="9" fill="#f4f5f0" stroke="#e3e6de"/>
+  </g>
+
+  <!-- floating toolbar -->
+  <rect x="536" y="238" width="80" height="30" rx="9" fill="rgba(14,18,22,0.94)" stroke="rgba(255,255,255,0.16)"/>
+  <circle cx="551" cy="253" r="6.5" fill="rgba(185,255,102,0.18)"/>
+  <circle cx="571" cy="253" r="6.5" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="591" cy="253" r="6.5" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="606" cy="253" r="6.5" fill="rgba(255,255,255,0.08)"/>
+
+  <!-- insert affordance -->
+  <rect x="352" y="374" width="96" height="18" rx="9" fill="#10150c" stroke="rgba(185,255,102,0.4)"/>
+  <text x="400" y="386" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#d9ffb0">+ ADD SECTION</text>
+
+  <!-- contact block -->
+  <rect x="170" y="378" width="460" height="38" rx="0" fill="#eef6e4"/>
+  <rect x="192" y="392" width="140" height="8" rx="4" fill="#2c3a1f"/>
+</svg>
