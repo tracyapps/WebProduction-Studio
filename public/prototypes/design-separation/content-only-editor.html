@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clean Slate — content-only editor · WPS prototype</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="wps-tokens.css" />
+<style>
+  /* Concept 1 — "Clean Slate": no design surfaces exist at all. */
+  .ws { display: grid; grid-template-columns: minmax(0, 1fr); min-height: calc(100vh - 62px); }
+  .ws[data-outline='true'] { grid-template-columns: 264px minmax(0, 1fr); }
+  .ws__rail { padding: 22px 16px 40px 22px; border-right: 1px solid var(--ed-line); background: var(--ed-surface-2); }
+  .ws__main { min-width: 0; }
+
+  .delegate {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 12px 20px; border-bottom: 1px solid var(--ed-line);
+    background: color-mix(in oklab, var(--ed-leaf-soft) 62%, var(--ed-surface));
+    color: var(--ed-ink-2); font-size: 12.5px;
+  }
+  .delegate strong { color: var(--ed-ink); font-weight: 600; }
+  .delegate__spacer { flex: 1; }
+
+  .doc { width: min(760px, 100%); margin: 0 auto; padding: 40px 28px 120px; }
+  .doc__title {
+    width: 100%; margin: 0; padding: 4px 6px; border: 1px solid transparent; border-radius: 8px;
+    background: transparent; color: var(--ed-ink); font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 600; letter-spacing: -0.03em; line-height: 1.1;
+  }
+  .doc__title:hover { background: var(--ed-surface); border-color: var(--ed-line); }
+  .doc__title:focus { outline: none; background: var(--ed-surface); border-color: var(--ed-leaf); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ed-leaf) 16%, transparent); }
+  .doc__meta { margin: 12px 6px 0; color: var(--ed-muted); font-family: var(--ed-mono); font-size: 11.5px; }
+
+  .blocks { display: grid; gap: 16px; margin-top: 34px; }
+  .block { padding: 20px 20px 22px; }
+  .block__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+  .block__job { min-width: 0; }
+  .block__job h3 { margin: 6px 0 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .block__controls { display: flex; gap: 2px; }
+  .block__fields { display: grid; gap: 16px; }
+
+  .svc { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--ed-line); border-radius: 12px; background: var(--ed-surface-2); }
+  .svc__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .svc__n { display: inline-flex; align-items: center; gap: 8px; color: var(--ed-muted); font-family: var(--ed-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .svc__n b { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 6px; background: var(--ed-surface); border: 1px solid var(--ed-line); color: var(--ed-ink-2); font-size: 10.5px; }
+  .svc__actions { display: flex; gap: 2px; }
+
+  .add-block {
+    display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%;
+    min-height: 52px; margin-top: 16px; border: 1px dashed var(--ed-line-strong); border-radius: var(--ed-radius-lg);
+    background: transparent; color: var(--ed-ink-2); font-size: 13.5px; font-weight: 560; cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  .add-block:hover { background: var(--ed-surface); border-color: var(--ed-leaf); color: var(--ed-leaf); }
+
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .choice {
+    display: grid; gap: 8px; padding: 16px; text-align: left; border: 1px solid var(--ed-line);
+    border-radius: var(--ed-radius); background: var(--ed-surface); cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+  }
+  .choice:hover { border-color: var(--ed-leaf); background: var(--ed-surface-2); transform: translateY(-1px); }
+  .choice__glyph { color: var(--ed-leaf); }
+  .choice strong { font-size: 14px; font-weight: 600; }
+  .choice small { color: var(--ed-muted); font-size: 12px; line-height: 1.5; }
+
+  .settings { position: relative; }
+  .settings .ed-popover { top: calc(100% + 10px); right: 0; }
+
+  /* Full-mode, read-only site preview — deliberately a different world. */
+  .preview { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: oklch(30% 0.02 250); }
+  .preview__bar {
+    display: flex; align-items: center; gap: 14px; padding: 12px 20px;
+    background: oklch(22% 0.02 250); color: oklch(94% 0.01 130); border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .preview__bar strong { font-size: 13px; font-weight: 600; }
+  .preview__bar span { color: oklch(76% 0.02 150); font-size: 12px; }
+  .preview__bar .ed-btn { margin-left: auto; background: oklch(30% 0.02 250); border-color: rgba(255,255,255,0.18); color: white; }
+  .preview__bar .ed-btn:hover { background: oklch(34% 0.02 250); }
+  .preview__stage { flex: 1; overflow: auto; padding: 26px; display: flex; justify-content: center; }
+  .preview__frame { width: min(1100px, 100%); align-self: flex-start; box-shadow: 0 30px 90px rgba(0,0,0,0.4); border-radius: 14px; overflow: hidden; }
+  .preview__note { padding: 8px 20px; background: oklch(26% 0.02 250); color: oklch(72% 0.02 150); font-size: 11.5px; border-top: 1px solid rgba(255,255,255,0.08); }
+
+  @media (max-width: 860px) {
+    .ws[data-outline='true'] { grid-template-columns: 1fr; }
+    .ws__rail { border-right: 0; border-bottom: 1px solid var(--ed-line); }
+    .choices { grid-template-columns: 1fr; }
+    .doc { padding-inline: 18px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+<script src="wps-content.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+const { WPS, WPSIcon, WPSGlyph, WPS_SITE, WPS_STORE } = window;
+
+const AGENCY = 'Northwind Studio';
+
+function usePersistent(key, initial) {
+  const [value, setValue] = useState(() => WPS_STORE.get(key, initial));
+  useEffect(() => { WPS_STORE.set(key, value); }, [key, value]);
+  return [value, setValue];
+}
+
+function fieldLabels(kind) {
+  switch (kind) {
+    case 'hero': return { heading: 'Main headline', body: 'Supporting sentence' };
+    case 'testimonials': return { heading: 'Heading', body: 'Customer quote' };
+    case 'contact': return { heading: 'Heading', body: 'Supporting text' };
+    case 'services': return { heading: 'Heading', body: 'Introduction' };
+    case 'faq': return { heading: 'Heading', body: 'Introduction' };
+    default: return { heading: 'Heading', body: 'Text' };
+  }
+}
+
+function newSection(choice) {
+  const base = { id: WPS.nextId(choice.kind), kind: choice.kind, label: choice.label, purpose: choice.purpose, heading: choice.label, body: 'Add the information your visitors need here.', design: { colorTreatment: 'light' } };
+  if (choice.kind === 'testimonials') base.design.layout = 'single';
+  if (choice.kind === 'contact') { base.design.layout = 'soft'; base.cta = 'Get in touch'; }
+  return base;
+}
+
+function App() {
+  const [sections, setSections] = useState(() => WPS.clone(WPS.sections));
+  const [services, setServices] = useState(() => WPS.clone(WPS.services));
+  const [pageTitle, setPageTitle] = useState('Home page');
+  const [preview, setPreview] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [saveState, setSaveState] = useState('saved');
+  const [toast, setToast] = useState(null);
+
+  const [outline, setOutline] = usePersistent('wps.clean.outline', false);
+  const [showPurpose, setShowPurpose] = usePersistent('wps.clean.purpose', true);
+  const [comfortable, setComfortable] = usePersistent('wps.clean.comfortable', true);
+  const [counts, setCounts] = usePersistent('wps.clean.counts', false);
+
+  const settingsRef = useRef(null);
+  const addRef = useRef(null);
+
+  useEffect(() => {
+    if (saveState === 'unsaved') { const t = setTimeout(() => setSaveState('saving'), 650); return () => clearTimeout(t); }
+    if (saveState === 'saving') { const t = setTimeout(() => setSaveState('saved'), 500); return () => clearTimeout(t); }
+  }, [saveState]);
+  useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 2800); return () => clearTimeout(t); }, [toast]);
+  useEffect(() => {
+    if (!addOpen) return; addRef.current && addRef.current.focus();
+    const onKey = (e) => { if (e.key === 'Escape') setAddOpen(false); };
+    window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
+  }, [addOpen]);
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const onDown = (e) => { if (!settingsRef.current || !settingsRef.current.contains(e.target)) setSettingsOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setSettingsOpen(false); };
+    window.addEventListener('mousedown', onDown); window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('mousedown', onDown); window.removeEventListener('keydown', onKey); };
+  }, [settingsOpen]);
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e) => { if (e.key === 'Escape') setPreview(false); };
+    window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
+  }, [preview]);
+
+  const changed = () => setSaveState('unsaved');
+  const patchSection = (id, changes) => { setSections((s) => s.map((x) => x.id === id ? { ...x, ...changes } : x)); changed(); };
+  const move = (id, dir) => {
+    setSections((s) => { const i = s.findIndex((x) => x.id === id); const j = i + dir; if (i < 0 || j < 0 || j >= s.length) return s; return WPS.moveItem(s, i, j); });
+    changed();
+  };
+  const duplicate = (id) => {
+    const src = sections.find((x) => x.id === id); if (!src) return;
+    const copy = { ...WPS.clone(src), id: WPS.nextId(src.kind), label: src.label + ' copy' };
+    setSections((s) => { const i = s.findIndex((x) => x.id === id); const next = s.slice(); next.splice(i + 1, 0, copy); return next; });
+    changed(); setToast('Section duplicated');
+  };
+  const remove = (id, label) => { setSections((s) => s.filter((x) => x.id !== id)); changed(); setToast(label + ' removed'); };
+  const addSection = (choice) => {
+    const created = newSection(choice);
+    setSections((s) => s.concat([created]));
+    setAddOpen(false); changed(); setToast(choice.label + ' added to the page');
+    setTimeout(() => { const el = document.getElementById('focus-' + created.id); if (el) el.focus(); }, 60);
+  };
+  const patchService = (id, changes) => { setServices((s) => s.map((x) => x.id === id ? { ...x, ...changes } : x)); changed(); };
+  const moveService = (id, dir) => { setServices((s) => { const i = s.findIndex((x) => x.id === id); const j = i + dir; if (i < 0 || j < 0 || j >= s.length) return s; return WPS.moveItem(s, i, j); }); changed(); };
+  const addService = () => { setServices((s) => s.concat([{ id: WPS.nextId('service'), title: 'New service', description: 'Describe this service for your visitors.' }])); changed(); };
+  const removeService = (id) => { setServices((s) => s.filter((x) => x.id !== id)); changed(); };
+
+  const statusText = saveState === 'saved' ? 'Draft saved' : saveState === 'saving' ? 'Saving…' : 'Unsaved changes';
+
+  return (
+    <div className="ed-app" data-od-id="clean-slate-editor">
+      <header className="ed-topbar" data-od-id="editor-topbar">
+        <a className="ed-backlink" href="index.html" target="_top"><WPSIcon name="back" size={16} /> Prototypes</a>
+
+        <div className="ed-doc">
+          <h1 className="ed-doc__name">{pageTitle}</h1>
+          <span className="ed-doc__path">{WPS.site.name} · /</span>
+        </div>
+
+        <div className="ed-actions">
+          <span className="ed-tag" title={`Design and layout are managed by ${AGENCY}`}><WPSIcon name="lock" size={13} /> Design by {AGENCY}</span>
+          <span className="ed-doc__path" aria-live="polite" data-od-id="save-status">{statusText}</span>
+          <div className="settings" ref={settingsRef}>
+            <button className="ed-iconbtn" type="button" aria-label="Workspace settings" aria-haspopup="true" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((o) => !o)}>
+              <WPSIcon name="sliders" size={19} />
+            </button>
+            {settingsOpen ? (
+              <div className="ed-popover" role="dialog" aria-label="Workspace settings">
+                <p className="ed-popover__title">Workspace</p>
+                <div className="ed-popover__row">
+                  <label className="ed-switch"><input type="checkbox" checked={outline} onChange={(e) => setOutline(e.target.checked)} /><span className="ed-switch__track" /><span className="ed-switch__label">Page outline<small>Show a section list on the left</small></span></label>
+                </div>
+                <div className="ed-popover__row">
+                  <label className="ed-switch"><input type="checkbox" checked={showPurpose} onChange={(e) => setShowPurpose(e.target.checked)} /><span className="ed-switch__track" /><span className="ed-switch__label">Section purposes<small>Remind me what each block is for</small></span></label>
+                </div>
+                <div className="ed-popover__row">
+                  <label className="ed-switch"><input type="checkbox" checked={comfortable} onChange={(e) => setComfortable(e.target.checked)} /><span className="ed-switch__track" /><span className="ed-switch__label">Comfortable spacing<small>Roomier fields for easier writing</small></span></label>
+                </div>
+                <div className="ed-popover__row">
+                  <label className="ed-switch"><input type="checkbox" checked={counts} onChange={(e) => setCounts(e.target.checked)} /><span className="ed-switch__track" /><span className="ed-switch__label">Character counts<small>Show a limit under each field</small></span></label>
+                </div>
+              </div>
+            ) : null}
+          </div>
+          <button className="ed-btn" type="button" onClick={() => setPreview(true)} data-od-id="preview-site"><WPSIcon name="eye" size={16} /> Preview site</button>
+          <button className="ed-btn ed-btn--primary" type="button" onClick={() => { setSaveState('saved'); setToast('Your changes are now published'); }} data-od-id="publish">Publish</button>
+        </div>
+      </header>
+
+      <div className="delegate" data-od-id="design-delegation">
+        <WPSIcon name="lock" size={15} />
+        <span>You are editing <strong>content only</strong>. Design, layout, and accessibility are handled by <strong>{AGENCY}</strong> — your words are automatically styled to match your brand.</span>
+        <span className="delegate__spacer" />
+        <button className="ed-btn ed-btn--ghost" type="button" onClick={() => setToast('A design request was sent to ' + AGENCY)}>Request a design change <WPSIcon name="chevronRight" size={15} /></button>
+      </div>
+
+      <div className="ws" data-outline={String(outline)}>
+        {outline ? (
+          <aside className="ws__rail" aria-label="Page outline">
+            <div className="ed-rail">
+              <div className="ed-rail__head"><h2>Page outline</h2></div>
+              <ol>
+                {sections.map((s, i) => (
+                  <li key={s.id} className="ed-rail__item">
+                    <button type="button" onClick={() => document.getElementById('focus-' + s.id)?.focus()}>
+                      <span className="ed-rail__node" /> {i + 1}. {s.label}
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <button className="add-block" type="button" onClick={() => setAddOpen(true)} style={{ marginTop: 12, minHeight: 44 }}><WPSIcon name="plus" size={16} /> Add section</button>
+            </div>
+          </aside>
+        ) : null}
+
+        <main className="ws__main">
+          <div className="doc" data-od-id="content-document">
+            <input className="doc__title" value={pageTitle} aria-label="Page title" onChange={(e) => { setPageTitle(e.target.value); changed(); }} />
+            <p className="doc__meta">{sections.length} sections · Editing content · Last saved just now</p>
+
+            <div className="blocks" style={{ gap: comfortable ? 16 : 10 }}>
+              {sections.map((section, index) => (
+                <SectionBlock
+                  key={section.id}
+                  section={section}
+                  index={index}
+                  total={sections.length}
+                  services={services}
+                  showPurpose={showPurpose}
+                  counts={counts}
+                  comfortable={comfortable}
+                  onPatch={(c) => patchSection(section.id, c)}
+                  onMove={(d) => move(section.id, d)}
+                  onDuplicate={() => duplicate(section.id)}
+                  onRemove={() => remove(section.id, section.label)}
+                  onServicePatch={patchService}
+                  onServiceMove={moveService}
+                  onServiceAdd={addService}
+                  onServiceRemove={removeService}
+                />
+              ))}
+            </div>
+
+            <button className="add-block" type="button" onClick={() => setAddOpen(true)} data-od-id="add-section"><WPSIcon name="plus" size={17} /> Add a section</button>
+          </div>
+        </main>
+      </div>
+
+      {addOpen ? (
+        <div className="ed-backdrop" role="presentation" onMouseDown={() => setAddOpen(false)}>
+          <div className="ed-dialog" role="dialog" aria-modal="true" aria-labelledby="add-title" tabIndex={-1} ref={addRef} onMouseDown={(e) => e.stopPropagation()}>
+            <div className="ed-dialog__head">
+              <div><h2 id="add-title">Add a section</h2><p>Choose what this part of the page needs to do.</p></div>
+              <button className="ed-iconbtn" type="button" onClick={() => setAddOpen(false)} aria-label="Close"><WPSIcon name="x" size={20} /></button>
+            </div>
+            <div className="ed-dialog__body">
+              <div className="choices">
+                {WPS.addable.map((c) => (
+                  <button key={c.kind} className="choice" type="button" onClick={() => addSection(c)}>
+                    <span className="choice__glyph"><WPSGlyph name={c.glyph} size={72} /></span>
+                    <span className="ed-purpose">For: {c.purpose}</span>
+                    <strong>{c.label}</strong>
+                    <small>{c.description}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {preview ? (
+        <div className="preview" role="dialog" aria-modal="true" aria-label="Site preview, read only" data-od-id="site-preview">
+          <div className="preview__bar">
+            <WPSIcon name="monitor" size={18} />
+            <strong>Previewing the live site</strong>
+            <span>Read only — nothing here can be changed by accident.</span>
+            <button className="ed-btn" type="button" onClick={() => setPreview(false)} data-od-id="exit-preview"><WPSIcon name="back" size={16} /> Back to editing</button>
+          </div>
+          <div className="preview__stage">
+            <div className="preview__frame" dangerouslySetInnerHTML={{ __html: WPS_SITE.render(sections, services, {}) }} />
+          </div>
+          <p className="preview__note">This is exactly what visitors see. Your design and accessibility rules are already applied.</p>
+        </div>
+      ) : null}
+
+      {toast ? <div className="ed-toast" role="status"><WPSIcon name="check" size={16} strokeWidth={2.2} />{toast}</div> : null}
+    </div>
+  );
+}
+
+function SectionBlock({ section, index, total, services, showPurpose, counts, comfortable, onPatch, onMove, onDuplicate, onRemove, onServicePatch, onServiceMove, onServiceAdd, onServiceRemove }) {
+  const labels = fieldLabels(section.kind);
+  return (
+    <article className="ed-card block" data-od-id={'block-' + section.kind}>
+      <header className="block__head">
+        <div className="block__job">
+          {showPurpose ? <span className="ed-purpose"><WPSIcon name="info" size={13} /> {section.purpose}</span> : null}
+          <h3>{section.label}</h3>
+        </div>
+        <div className="block__controls">
+          <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move ${section.label} up`} disabled={index === 0} onClick={() => onMove(-1)}><WPSIcon name="arrowUp" size={16} /></button>
+          <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move ${section.label} down`} disabled={index === total - 1} onClick={() => onMove(1)}><WPSIcon name="arrowDown" size={16} /></button>
+          <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Duplicate ${section.label}`} onClick={onDuplicate}><WPSIcon name="copy" size={16} /></button>
+          <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Delete ${section.label}`} onClick={onRemove} style={{ color: 'var(--ed-danger)' }}><WPSIcon name="trash" size={16} /></button>
+        </div>
+      </header>
+
+      <div className="block__fields" style={{ gap: comfortable ? 16 : 10 }}>
+        <label className="ed-field">
+          <span>{labels.heading}</span>
+          <input id={'focus-' + section.id} value={section.heading} onChange={(e) => onPatch({ heading: e.target.value })} />
+          {counts ? <span className="ed-field__count">{section.heading.length} / 80</span> : null}
+        </label>
+        <label className="ed-field">
+          <span>{labels.body}</span>
+          <textarea rows={section.kind === 'testimonials' ? 2 : 3} value={section.body} onChange={(e) => onPatch({ body: e.target.value })} />
+          {counts ? <span className="ed-field__count">{section.body.length} / 180</span> : null}
+        </label>
+
+        {section.cta !== undefined ? (
+          <label className="ed-field">
+            <span>Button label</span>
+            <input value={section.cta} onChange={(e) => onPatch({ cta: e.target.value })} />
+            <span className="ed-field__hint">Where this button leads is set by {AGENCY}.</span>
+          </label>
+        ) : null}
+
+        {section.kind === 'services' ? (
+          <div className="svc-list" style={{ display: 'grid', gap: 12 }}>
+            {services.map((s, i) => (
+              <div className="svc" key={s.id}>
+                <div className="svc__head">
+                  <span className="svc__n"><b>{i + 1}</b> Service item</span>
+                  <span className="svc__actions">
+                    <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move ${s.title} up`} disabled={i === 0} onClick={() => onServiceMove(s.id, -1)}><WPSIcon name="arrowUp" size={15} /></button>
+                    <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move ${s.title} down`} disabled={i === services.length - 1} onClick={() => onServiceMove(s.id, 1)}><WPSIcon name="arrowDown" size={15} /></button>
+                    <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Remove ${s.title}`} onClick={() => onServiceRemove(s.id)} style={{ color: 'var(--ed-danger)' }}><WPSIcon name="trash" size={15} /></button>
+                  </span>
+                </div>
+                <label className="ed-field"><span>Name</span><input value={s.title} onChange={(e) => onServicePatch(s.id, { title: e.target.value })} /></label>
+                <label className="ed-field"><span>Description</span><textarea rows={2} value={s.description} onChange={(e) => onServicePatch(s.id, { description: e.target.value })} /></label>
+              </div>
+            ))}
+            <button className="ed-btn ed-btn--ghost" type="button" onClick={onServiceAdd} style={{ justifySelf: 'start' }}><WPSIcon name="plus" size={16} /> Add service</button>
+          </div>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

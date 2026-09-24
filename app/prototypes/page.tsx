@@ -4,6 +4,7 @@ import { ArrowRight, ClockCounterClockwise, Flask } from '@phosphor-icons/react/
 import { InternalLink as Link } from '@/components/InternalLink';
 import { SiteFooter } from '@/components/SiteFooter';
 import { SiteHeader } from '@/components/SiteHeader';
+import { designSeparationPrototypes } from './catalog-entries';
 import styles from './prototypes.module.css';
 
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ const prototypes = [
     href: '/prototypes/front-end-editor/guided-outline',
     image: '/prototypes/front-end-editor/guided-outline-v1.svg',
   },
+  ...designSeparationPrototypes,
 ];
 
 export default function PrototypesPage() {

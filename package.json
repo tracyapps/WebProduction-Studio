@@ -12,7 +12,8 @@
     "prebuild": "npm run generate:docs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ignore-pattern .next --ignore-pattern dist --ignore-pattern .vinext"
+    "lint": "eslint . --ignore-pattern .next --ignore-pattern dist --ignore-pattern .vinext",
+    "validate:prototypes": "node scripts/validate-prototypes.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Purpose Blocks — design as intent · WPS prototype</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="wps-tokens.css" />
+<style>
+  /* Concept 2 — "Purpose Blocks": design appears only as purpose choices. */
+  .ws { display: grid; grid-template-columns: 276px minmax(0, 1fr); min-height: calc(100vh - 62px); }
+  .ws[data-outline='false'] { grid-template-columns: minmax(0, 1fr); }
+  .ws__rail { padding: 22px 16px 40px 22px; border-right: 1px solid var(--ed-line); background: var(--ed-surface-2); }
+  .ws__main { min-width: 0; }
+
+  .doc { width: min(880px, 100%); margin: 0 auto; padding: 34px 28px 120px; }
+  .doc__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+  .doc__title { margin: 0; font-size: clamp(26px, 3vw, 34px); font-weight: 600; letter-spacing: -0.03em; }
+  .doc__meta { margin: 8px 0 0; color: var(--ed-muted); font-family: var(--ed-mono); font-size: 11.5px; }
+  .doc__trust { display: inline-flex; align-items: center; gap: 8px; padding: 8px 11px; border: 1px solid color-mix(in oklab, var(--ed-leaf) 30%, var(--ed-line)); border-radius: 999px; background: var(--ed-leaf-soft); color: var(--ed-leaf); font-size: 11.5px; font-weight: 560; }
+
+  .blocks { display: grid; gap: 18px; margin-top: 28px; }
+  .block { overflow: hidden; }
+  .block__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 18px 20px 14px; }
+  .block__id { min-width: 0; }
+  .block__id h3 { margin: 4px 0 0; font-size: 16px; font-weight: 600; letter-spacing: -0.015em; }
+  .block__controls { display: flex; gap: 2px; }
+  .block__body { padding: 0 20px 22px; }
+
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; color: var(--ed-muted); font-family: var(--ed-mono); font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; }
+  .divider::after { flex: 1; height: 1px; background: var(--ed-line); content: ''; }
+
+  .job { display: grid; gap: 12px; }
+  .job__opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 10px; }
+  .job__opt {
+    display: grid; gap: 8px; padding: 13px; text-align: left; border: 1px solid var(--ed-line);
+    border-radius: var(--ed-radius); background: var(--ed-surface); color: var(--ed-ink-2); cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+  }
+  .job__opt:hover { border-color: var(--ed-line-strong); background: var(--ed-surface-2); }
+  .job__opt[aria-checked='true'] { border-color: var(--ed-leaf); background: var(--ed-leaf-soft); box-shadow: 0 0 0 1px var(--ed-leaf) inset; }
+  .job__glyph { color: var(--ed-ink); opacity: 0.72; }
+  .job__opt[aria-checked='true'] .job__glyph { color: var(--ed-leaf); opacity: 1; }
+  .job__opt strong { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--ed-ink); }
+  .job__help { color: var(--ed-muted); font-size: 11.5px; line-height: 1.5; }
+
+  .tone { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tone__opt { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 13px; border: 1px solid var(--ed-line); border-radius: 10px; background: var(--ed-surface); color: var(--ed-ink-2); font-size: 12.5px; font-weight: 540; cursor: pointer; }
+  .tone__opt:hover { border-color: var(--ed-line-strong); }
+  .tone__opt[aria-checked='true'] { border-color: var(--ed-leaf); background: var(--ed-leaf-soft); color: var(--ed-leaf); }
+  .tone__dot { width: 12px; height: 12px; border-radius: 4px; border: 1px solid var(--ed-line-strong); }
+  .tone__dot[data-t='light'] { background: #fff; }
+  .tone__dot[data-t='brand'] { background: oklch(96% 0.03 130); }
+  .tone__dot[data-t='dark'] { background: oklch(22% 0.01 250); }
+
+  .stdnote { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px dashed var(--ed-line-strong); border-radius: var(--ed-radius); color: var(--ed-muted); font-size: 12.5px; }
+
+  .peek { margin-top: 16px; border: 1px solid var(--ed-line); border-radius: var(--ed-radius); overflow: hidden; background: var(--ed-surface-2); }
+  .peek__bar { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--ed-line); color: var(--ed-muted); font-family: var(--ed-mono); font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; }
+  .peek__stage { padding: 0; }
+  .peek__stage .sc-site { border-radius: 0; }
+  .peek__stage .sc-section { padding: 26px 22px; }
+
+  .settings { position: relative; }
+  .settings .ed-popover { top: calc(100% + 10px); right: 0; }
+
+  .preview { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; background: oklch(30% 0.02 250); }
+  .preview__bar { display: flex; align-items: center; gap: 14px; padding: 12px 20px; background: oklch(22% 0.02 250); color: oklch(94% 0.01 130); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .preview__bar strong { font-size: 13px; font-weight: 600; }
+  .preview__bar span { color: oklch(76% 0.02 150); font-size: 12px; }
+  .preview__bar .ed-btn { margin-left: auto; background: oklch(30% 0.02 250); border-color: rgba(255,255,255,0.18); color: white; }
+  .preview__stage { flex: 1; overflow: auto; padding: 26px; display: flex; justify-content: center; }
+  .preview__frame { width: min(1100px, 100%); align-self: flex-start; box-shadow: 0 30px 90px rgba(0,0,0,0.4); border-radius: 14px; overflow: hidden; }
+
+  @media (max-width: 900px) {
+    .ws, .ws[data-outline='false'] { grid-template-columns: 1fr; }
+    .ws__rail { border-right: 0; border-bottom: 1px solid var(--ed-line); }
+    .doc { padding-inline: 18px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+<script src="wps-content.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+const { WPS, WPSIcon, WPSGlyph, WPS_SITE, WPS_STORE } = window;
+const AGENCY = 'Northwind Studio';
+
+function usePersistent(key, initial) {
+  const [value, setValue] = useState(() => WPS_STORE.get(key, initial));
+  useEffect(() => { WPS_STORE.set(key, value); }, [key, value]);
+  return [value, setValue];
+}
+
+function fieldLabels(kind) {
+  switch (kind) {
+    case 'hero': return { heading: 'Main headline', body: 'Supporting sentence' };
+    case 'testimonials': return { heading: 'Heading', body: 'Customer quote' };
+    case 'contact': return { heading: 'Heading', body: 'Supporting text' };
+    case 'services': return { heading: 'Heading', body: 'Introduction' };
+    default: return { heading: 'Heading', body: 'Text' };
+  }
+}
+function newSection(choice) {
+  const base = { id: WPS.nextId(choice.kind), kind: choice.kind, label: choice.label, purpose: choice.purpose, heading: choice.label, body: 'Add the information your visitors need here.', design: { colorTreatment: 'light' } };
+  if (WPS.purposes[choice.kind]) base.design.layout = WPS.purposes[choice.kind][0].id;
+  if (choice.kind === 'contact') base.cta = 'Get in touch';
+  return base;
+}
+
+function App() {
+  const [sections, setSections] = useState(() => WPS.clone(WPS.sections));
+  const [services, setServices] = useState(() => WPS.clone(WPS.services));
+  const [addOpen, setAddOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [saveState, setSaveState] = useState('saved');
+  const [toast, setToast] = useState(null);
+  const [peek, setPeek] = useState({});
+
+  const [outline, setOutline] = usePersistent('wps.purpose.outline', true);
+  const [autoPeek, setAutoPeek] = usePersistent('wps.purpose.autopeek', false);
+  const [comfortable, setComfortable] = usePersistent('wps.purpose.comfortable', true);
+
+  const settingsRef = useRef(null);
+  const addRef = useRef(null);
+
+  useEffect(() => {
+    if (saveState === 'unsaved') { const t = setTimeout(() => setSaveState('saving'), 650); return () => clearTimeout(t); }
+    if (saveState === 'saving') { const t = setTimeout(() => setSaveState('saved'), 500); return () => clearTimeout(t); }
+  }, [saveState]);
+  useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 2800); return () => clearTimeout(t); }, [toast]);
+  useEffect(() => {
+    if (!addOpen) return; addRef.current && addRef.current.focus();
+    const onKey = (e) => { if (e.key === 'Escape') setAddOpen(false); };
+    window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
+  }, [addOpen]);
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const onDown = (e) => { if (!settingsRef.current || !settingsRef.current.contains(e.target)) setSettingsOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') setSettingsOpen(false); };
+    window.addEventListener('mousedown', onDown); window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('mousedown', onDown); window.removeEventListener('keydown', onKey); };
+  }, [settingsOpen]);
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e) => { if (e.key === 'Escape') setPreview(false); };
+    window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
+  }, [preview]);
+
+  const changed = () => setSaveState('unsaved');
+  const patch = (id, changes) => { setSections((s) => s.map((x) => x.id === id ? { ...x, ...changes } : x)); changed(); };
+  const patchDesign = (id, changes) => { setSections((s) => s.map((x) => x.id === id ? { ...x, design: { ...x.design, ...changes } } : x)); changed(); };
+  const move = (id, dir) => { setSections((s) => { const i = s.findIndex((x) => x.id === id); const j = i + dir; if (i < 0 || j < 0 || j >= s.length) return s; return WPS.moveItem(s, i, j); }); changed(); };
+  const duplicate = (id) => { const src = sections.find((x) => x.id === id); if (!src) return; const copy = { ...WPS.clone(src), id: WPS.nextId(src.kind), label: src.label + ' copy' }; setSections((s) => { const i = s.findIndex((x) => x.id === id); const n = s.slice(); n.splice(i + 1, 0, copy); return n; }); changed(); setToast('Section duplicated'); };
+  const remove = (id, label) => { setSections((s) => s.filter((x) => x.id !== id)); changed(); setToast(label + ' removed'); };
+  const add = (choice) => { const created = newSection(choice); setSections((s) => s.concat([created])); setAddOpen(false); changed(); setToast(choice.label + ' added to the page'); setTimeout(() => { const el = document.getElementById('focus-' + created.id); if (el) el.focus(); }, 60); };
+  const patchService = (id, changes) => { setServices((s) => s.map((x) => x.id === id ? { ...x, ...changes } : x)); changed(); };
+  const moveService = (id, dir) => { setServices((s) => { const i = s.findIndex((x) => x.id === id); const j = i + dir; if (i < 0 || j < 0 || j >= s.length) return s; return WPS.moveItem(s, i, j); }); changed(); };
+  const addService = () => { setServices((s) => s.concat([{ id: WPS.nextId('service'), title: 'New service', description: 'Describe this service for your visitors.' }])); changed(); };
+  const removeService = (id) => { setServices((s) => s.filter((x) => x.id !== id)); changed(); };
+  const togglePeek = (id) => setPeek((p) => ({ ...p, [id]: !p[id] }));
+
+  const statusText = saveState === 'saved' ? 'Draft saved' : saveState === 'saving' ? 'Saving…' : 'Unsaved changes';
+
+  return (
+    <div className="ed-app" data-od-id="purpose-blocks-editor">
+      <header className="ed-topbar" data-od-id="editor-topbar">
+        <a className="ed-backlink" href="index.html" target="_top"><WPSIcon name="back" size={16} /> Prototypes</a>
+        <div className="ed-doc"><h1 className="ed-doc__name">Home page</h1><span className="ed-doc__path">{WPS.site.name} · /</span></div>
+        <div className="ed-actions">
+          <span className="ed-doc__path" aria-live="polite" data-od-id="save-status">{statusText}</span>
+          <div className="settings" ref={settingsRef}>
+            <button className="ed-iconbtn" type="button" aria-label="Workspace settings" aria-haspopup="true" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((o) => !o)}><WPSIcon name="sliders" size={19} /></button>
+            {settingsOpen ? (
+              <div className="ed-popover" role="dialog" aria-label="Workspace settings">
+                <p className="ed-popover__title">Workspace</p>
+                <div className="ed-popover__row"><label className="ed-switch"><input type="checkbox" checked={outline} onChange={(e) => setOutline(e.target.checked)} /><span className="ed-switch__track" /><span className="ed-switch__label">Page outline<small>Keep the section list visible</small></span></label></div>
+                <div className="ed-popover__row"><label className="ed-switch"><input type="checkbox" checked={autoPeek} onChange={(e) => setAutoPeek(e.target.checked)} /><span className="ed-switch__track" /><span className="ed-switch__label">Always show previews<small>Preview every section without asking</small></span></label></div>
+                <div className="ed-popover__row"><label className="ed-switch"><input type="checkbox" checked={comfortable} onChange={(e) => setComfortable(e.target.checked)} /><span className="ed-switch__track" /><span className="ed-switch__label">Comfortable spacing<small>Roomier fields for easier writing</small></span></label></div>
+              </div>
+            ) : null}
+          </div>
+          <button className="ed-btn" type="button" onClick={() => setPreview(true)}><WPSIcon name="eye" size={16} /> Full preview</button>
+          <button className="ed-btn ed-btn--primary" type="button" onClick={() => { setSaveState('saved'); setToast('Your changes are now published'); }} data-od-id="publish">Publish</button>
+        </div>
+      </header>
+
+      <div className="ws" data-outline={String(outline)}>
+        {outline ? (
+          <aside className="ws__rail" aria-label="Page outline">
+            <div className="ed-rail">
+              <div className="ed-rail__head"><h2>Page outline</h2><button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label="Hide outline" onClick={() => setOutline(false)}><WPSIcon name="x" size={15} /></button></div>
+              <ol>
+                {sections.map((s, i) => (
+                  <li key={s.id} className="ed-rail__item"><button type="button" onClick={() => document.getElementById('focus-' + s.id)?.focus()}><span className="ed-rail__node" /> {i + 1}. {s.label}</button></li>
+                ))}
+              </ol>
+              <button className="ed-btn ed-btn--ghost" type="button" onClick={() => setAddOpen(true)} style={{ marginTop: 10, width: '100%' }}><WPSIcon name="plus" size={16} /> Add section</button>
+            </div>
+          </aside>
+        ) : null}
+
+        <main className="ws__main">
+          <div className="doc" data-od-id="content-document">
+            <div className="doc__head">
+              <div>
+                <h1 className="doc__title">Home page</h1>
+                <p className="doc__meta">{sections.length} sections · Focus on the words, choose the job each section does.</p>
+              </div>
+              {!outline ? <button className="ed-btn" type="button" onClick={() => setOutline(true)}><WPSIcon name="list" size={16} /> Show outline</button> : null}
+              <span className="doc__trust"><WPSIcon name="check" size={14} strokeWidth={2.2} /> On-brand choices only</span>
+            </div>
+
+            <div className="blocks" style={{ gap: comfortable ? 18 : 12 }}>
+              {sections.map((section, index) => {
+                const purposes = WPS.purposes[section.kind];
+                const open = autoPeek || !!peek[section.id];
+                return (
+                  <article className="ed-card block" key={section.id} data-od-id={'block-' + section.kind}>
+                    <header className="block__head">
+                      <div className="block__id">
+                        <span className="ed-purpose"><WPSIcon name="info" size={13} /> For: {section.purpose}</span>
+                        <h3>{section.label}</h3>
+                      </div>
+                      <div className="block__controls">
+                        <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move up`} disabled={index === 0} onClick={() => move(section.id, -1)}><WPSIcon name="arrowUp" size={16} /></button>
+                        <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move down`} disabled={index === sections.length - 1} onClick={() => move(section.id, 1)}><WPSIcon name="arrowDown" size={16} /></button>
+                        <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Duplicate ${section.label}`} onClick={() => duplicate(section.id)}><WPSIcon name="copy" size={16} /></button>
+                        <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Delete ${section.label}`} onClick={() => remove(section.id, section.label)} style={{ color: 'var(--ed-danger)' }}><WPSIcon name="trash" size={16} /></button>
+                      </div>
+                    </header>
+
+                    <div className="block__body">
+                      {purposes ? (
+                        <div className="job">
+                          <span className="ed-eyebrow">This section’s job</span>
+                          <div className="job__opts" role="radiogroup" aria-label="Choose what this section does">
+                            {purposes.map((p) => {
+                              const selected = section.design.layout === p.id;
+                              return (
+                                <button key={p.id} type="button" role="radio" aria-checked={selected} className="job__opt" onClick={() => patchDesign(section.id, { layout: p.id })}>
+                                  <span className="job__glyph"><WPSGlyph name={p.glyph} size={78} /></span>
+                                  <strong>{selected ? <WPSIcon name="check" size={14} strokeWidth={2.4} /> : null} {p.label}</strong>
+                                  <span className="job__help">{p.help}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <div className="tone" role="radiogroup" aria-label="Section weight">
+                            <span className="ed-eyebrow" style={{ marginRight: 4 }}>Weight</span>
+                            {WPS.treatments.map((t) => (
+                              <button key={t.id} type="button" role="radio" aria-checked={section.design.colorTreatment === t.id} className="tone__opt" onClick={() => patchDesign(section.id, { colorTreatment: t.id })}>
+                                <span className="tone__dot" data-t={t.id} /> {t.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="stdnote"><WPSIcon name="check" size={16} /> This block already matches your brand. No design choices are needed here.</div>
+                      )}
+
+                      <div className="divider">Words</div>
+
+                      <div style={{ display: 'grid', gap: comfortable ? 16 : 10 }}>
+                        <label className="ed-field"><span>{fieldLabels(section.kind).heading}</span><input id={'focus-' + section.id} value={section.heading} onChange={(e) => patch(section.id, { heading: e.target.value })} /></label>
+                        <label className="ed-field"><span>{fieldLabels(section.kind).body}</span><textarea rows={2} value={section.body} onChange={(e) => patch(section.id, { body: e.target.value })} /></label>
+                        {section.cta !== undefined ? <label className="ed-field"><span>Button label</span><input value={section.cta} onChange={(e) => patch(section.id, { cta: e.target.value })} /></label> : null}
+
+                        {section.kind === 'services' ? services.map((s, i) => (
+                          <div className="svc" key={s.id} style={{ border: '1px solid var(--ed-line)', borderRadius: 12, padding: 14, background: 'var(--ed-surface-2)', display: 'grid', gap: 10 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <span className="ed-eyebrow">Service {i + 1}</span>
+                              <span style={{ display: 'flex', gap: 2 }}>
+                                <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move ${s.title} up`} disabled={i === 0} onClick={() => moveService(s.id, -1)}><WPSIcon name="arrowUp" size={15} /></button>
+                                <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Move ${s.title} down`} disabled={i === services.length - 1} onClick={() => moveService(s.id, 1)}><WPSIcon name="arrowDown" size={15} /></button>
+                                <button className="ed-iconbtn ed-iconbtn--sm" type="button" aria-label={`Remove ${s.title}`} onClick={() => removeService(s.id)} style={{ color: 'var(--ed-danger)' }}><WPSIcon name="trash" size={15} /></button>
+                              </span>
+                            </div>
+                            <label className="ed-field"><span>Name</span><input value={s.title} onChange={(e) => patchService(s.id, { title: e.target.value })} /></label>
+                            <label className="ed-field"><span>Description</span><textarea rows={2} value={s.description} onChange={(e) => patchService(s.id, { description: e.target.value })} /></label>
+                          </div>
+                        )) : null}
+                        {section.kind === 'services' ? <button className="ed-btn ed-btn--ghost" type="button" onClick={addService} style={{ justifySelf: 'start' }}><WPSIcon name="plus" size={16} /> Add service</button> : null}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                        <button className="ed-btn" type="button" aria-pressed={!!peek[section.id]} onClick={() => togglePeek(section.id)}><WPSIcon name={peek[section.id] ? 'eyeOff' : 'eye'} size={16} /> {peek[section.id] ? 'Hide preview' : 'Peek at the look'}</button>
+                      </div>
+
+                      {open ? (
+                        <div className="peek">
+                          <div className="peek__bar"><WPSIcon name="eye" size={13} /> Preview only — visitors see this styling</div>
+                          <div className="peek__stage" dangerouslySetInnerHTML={{ __html: WPS_SITE.renderSection(section, services, {}) }} />
+                        </div>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            <button className="ed-btn" type="button" onClick={() => setAddOpen(true)} style={{ width: '100%', minHeight: 52, borderStyle: 'dashed', marginTop: 18 }}><WPSIcon name="plus" size={17} /> Add a section</button>
+          </div>
+        </main>
+      </div>
+
+      {addOpen ? (
+        <div className="ed-backdrop" role="presentation" onMouseDown={() => setAddOpen(false)}>
+          <div className="ed-dialog" role="dialog" aria-modal="true" aria-labelledby="add-title" tabIndex={-1} ref={addRef} onMouseDown={(e) => e.stopPropagation()}>
+            <div className="ed-dialog__head"><div><h2 id="add-title">Add a section</h2><p>Choose what this part of the page needs to do.</p></div><button className="ed-iconbtn" type="button" onClick={() => setAddOpen(false)} aria-label="Close"><WPSIcon name="x" size={20} /></button></div>
+            <div className="ed-dialog__body">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {WPS.addable.map((c) => (
+                  <button key={c.kind} type="button" onClick={() => add(c)} className="job__opt" style={{ gap: 8 }}>
+                    <span className="job__glyph" style={{ color: 'var(--ed-leaf)' }}><WPSGlyph name={c.glyph} size={72} /></span>
+                    <span className="ed-purpose">For: {c.purpose}</span>
+                    <strong>{c.label}</strong>
+                    <span className="job__help">{c.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {preview ? (
+        <div className="preview" role="dialog" aria-modal="true" aria-label="Full site preview" data-od-id="site-preview">
+          <div className="preview__bar"><WPSIcon name="monitor" size={18} /><strong>Full site preview</strong><span>Read only. Design was chosen by {AGENCY}; the words are yours.</span><button className="ed-btn" type="button" onClick={() => setPreview(false)}><WPSIcon name="back" size={16} /> Back to editing</button></div>
+          <div className="preview__stage"><div className="preview__frame" dangerouslySetInnerHTML={{ __html: WPS_SITE.render(sections, services, {}) }} /></div>
+        </div>
+      ) : null}
+
+      {toast ? <div className="ed-toast" role="status"><WPSIcon name="check" size={16} strokeWidth={2.2} />{toast}</div> : null}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
