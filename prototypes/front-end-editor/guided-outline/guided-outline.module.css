@@ -10,6 +10,20 @@
   white-space: nowrap;
 }
 
+/*
+ * This editor chrome is a hand-built dark surface, so neutralise the browser's
+ * default form-control chrome before anything else. Without this, any control
+ * that does not declare its own background falls back to the light
+ * `buttonface` fill and a 2px `outset` border while keeping the stylesheet's
+ * light text — light-on-light, unreadable buttons.
+ */
+.app :where(button, input, textarea, select) {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
 .app {
   display: flex;
   min-height: 100vh;
@@ -517,6 +531,7 @@
   padding: 7px 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
   color: #c7ccc6;
   font-size: 11px;
 }
@@ -529,7 +544,7 @@
 
 .popoverHint {
   margin: 2px 0 0;
-  color: #767c76;
+  color: #8d938d;
   font-size: 10.5px;
   line-height: 1.5;
 }
@@ -546,6 +561,7 @@
   padding: 8px 13px;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
   color: #d5d9d4;
   font-size: 11px;
   font-weight: 600;
@@ -626,6 +642,8 @@
   padding: 13px 14px;
   border: 1px solid var(--line);
   border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #eef2ea;
   text-align: left;
 }
 

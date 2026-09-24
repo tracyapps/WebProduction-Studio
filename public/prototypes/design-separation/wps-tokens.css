@@ -465,10 +465,17 @@
 .sc-section[data-active='true'] { position: relative; }
 
 .sc-eyebrow { display: block; margin-bottom: 8px; color: var(--sc-accent); font-family: var(--ed-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; }
+/* The brand accent is tuned for the plain canvas; on the lighter brand wash it
+   drops to ~3:1, so use a deeper leaf tone inside accented sections. */
+[data-treatment='brand'] .sc-eyebrow { color: oklch(42% 0.1 145); }
 .sc-heading { margin: 0; max-width: 22ch; font-size: clamp(24px, 3.4vw, 34px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
 .sc-body { max-width: 52ch; margin: 12px 0 0; color: var(--sc-muted); font-size: 14px; line-height: 1.65; }
 [data-treatment='brand'] .sc-body,
-[data-treatment='dark'] .sc-body { color: inherit; opacity: 0.78; }
+[data-treatment='brand'] .sc-card p,
+[data-treatment='brand'] .sc-person span,
+[data-treatment='dark'] .sc-body,
+[data-treatment='dark'] .sc-card p,
+[data-treatment='dark'] .sc-person span { color: inherit; opacity: 0.78; }
 .sc-cta { display: inline-block; margin-top: 18px; padding: 10px 16px; border-radius: 9px; background: var(--sc-ink); color: #fff; font-size: 13px; font-weight: 640; }
 .sc-section[data-treatment='dark'] .sc-cta { background: #fff; color: var(--sc-dark-bg); }
 
@@ -489,6 +496,11 @@
 .sc-person { display: inline-flex; align-items: center; gap: 10px; margin-top: 16px; }
 .sc-person strong { display: block; font-size: 13px; }
 .sc-person span { color: var(--sc-muted); font-size: 11.5px; }
+/* Card outlines are tuned for the plain canvas; on brand/dark sections the
+   default hairline disappears, so re-point it at the treatment ink. Declared
+   here, after the layout variants, so it also wins for the editorial grid. */
+[data-treatment='brand'] .sc-grid .sc-card,
+[data-treatment='dark'] .sc-grid .sc-card { border-color: color-mix(in oklab, currentColor 22%, transparent); }
 
 @media (max-width: 760px) {
   .ed-topbar { grid-template-columns: 1fr auto; }

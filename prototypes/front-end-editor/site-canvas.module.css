@@ -148,6 +148,36 @@
   line-height: 1.65;
 }
 
+/*
+ * Secondary text has to follow the section's own treatment ink. The static
+ * prototypes already do this in wps-tokens.css; without the same rule here a
+ * dark or brand section kept the light-section grey and its body copy dropped
+ * to roughly 2.9:1 against the background.
+ */
+[data-treatment='brand'] .sectionBody,
+[data-treatment='brand'] .heroBody,
+[data-treatment='brand'] .serviceCard p,
+[data-treatment='brand'] .testimonialPerson span,
+[data-treatment='dark'] .sectionBody,
+[data-treatment='dark'] .heroBody,
+[data-treatment='dark'] .serviceCard p,
+[data-treatment='dark'] .testimonialPerson span {
+  color: inherit;
+  opacity: 0.78;
+}
+
+[data-treatment='brand'] .eyebrow,
+[data-treatment='brand'] .quoteMark,
+[data-treatment='brand'] .placeholderNote {
+  color: #3f6b1f;
+}
+
+[data-treatment='dark'] .eyebrow,
+[data-treatment='dark'] .quoteMark,
+[data-treatment='dark'] .placeholderNote {
+  color: #a8d07a;
+}
+
 .ctaButton {
   display: inline-block;
   margin-top: 20px;
@@ -398,6 +428,16 @@
 
 .editableCardBody {
   font-size: 12.5px;
+}
+
+/*
+ * Card outlines are tuned for the plain canvas; on brand/dark sections the
+ * default hairline disappears, so re-point it at the treatment ink. Declared
+ * last so it also wins over the editorial layout's border rules.
+ */
+[data-treatment='brand'] .services .serviceCard,
+[data-treatment='dark'] .services .serviceCard {
+  border-color: color-mix(in srgb, currentColor 22%, transparent);
 }
 
 @media (max-width: 720px) {

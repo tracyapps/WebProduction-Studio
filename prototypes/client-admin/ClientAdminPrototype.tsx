@@ -46,12 +46,25 @@ type SectionKind =
   | 'faq'
   | 'text-image';
 
+interface SectionDesign {
+  layout: LayoutChoice;
+  colorTreatment: ColorChoice;
+  imageEmphasis: EmphasisChoice;
+}
+
+const DEFAULT_DESIGN: SectionDesign = {
+  layout: 'simple',
+  colorTreatment: 'light',
+  imageEmphasis: 'balanced',
+};
+
 interface PageSection {
   id: string;
   kind: SectionKind;
   label: string;
   heading: string;
   introduction: string;
+  design: SectionDesign;
 }
 
 interface ServiceItem {
@@ -67,6 +80,7 @@ const INITIAL_SECTIONS: PageSection[] = [
     label: 'Hero',
     heading: 'Build with confidence.',
     introduction: 'Thoughtful websites for ambitious small businesses.',
+    design: { ...DEFAULT_DESIGN },
   },
   {
     id: 'services',
@@ -75,6 +89,7 @@ const INITIAL_SECTIONS: PageSection[] = [
     heading: 'Services that move your business forward.',
     introduction:
       'Everything we do is designed to help you attract more customers and keep them coming back.',
+    design: { ...DEFAULT_DESIGN },
   },
   {
     id: 'testimonials',
@@ -82,6 +97,7 @@ const INITIAL_SECTIONS: PageSection[] = [
     label: 'Testimonials',
     heading: 'Trusted by business owners like you.',
     introduction: 'Kind words from people we have helped grow.',
+    design: { ...DEFAULT_DESIGN },
   },
   {
     id: 'contact',
@@ -89,6 +105,7 @@ const INITIAL_SECTIONS: PageSection[] = [
     label: 'Contact',
     heading: 'Let’s start a conversation.',
     introduction: 'Have a question or a project in mind? We would love to hear about it.',
+    design: { ...DEFAULT_DESIGN },
   },
 ];
 
@@ -139,9 +156,6 @@ export function ClientAdminPrototype() {
   const [theme, setTheme] = useState<Theme>('dark');
   const [previewVisible, setPreviewVisible] = useState(true);
   const [saveState, setSaveState] = useState<SaveState>('saved');
-  const [layout, setLayout] = useState<LayoutChoice>('simple');
-  const [colorTreatment, setColorTreatment] = useState<ColorChoice>('light');
-  const [imageEmphasis, setImageEmphasis] = useState<EmphasisChoice>('balanced');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [draggedSectionId, setDraggedSectionId] = useState<string | null>(null);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
@@ -152,6 +166,11 @@ export function ClientAdminPrototype() {
   const serviceSequence = useRef(0);
 
   const activeSection = sections.find((section) => section.id === activeSectionId) ?? null;
+
+  // Design is per section: the editor column and the preview both read from the
+  // active section's own design, so switching sections never shows another
+  // section's choices and a design edit only ever touches the active section.
+  const activeDesign = activeSection?.design ?? DEFAULT_DESIGN;
 
   const activeSectionIndex = activeSection
     ? sections.findIndex((section) => section.id === activeSection.id)
@@ -215,6 +234,18 @@ export function ClientAdminPrototype() {
     markChanged();
   };
 
+  const updateActiveDesign = (changes: Partial<SectionDesign>) => {
+    if (!activeSection) return;
+    setSections((current) =>
+      current.map((section) =>
+        section.id === activeSection.id
+          ? { ...section, design: { ...section.design, ...changes } }
+          : section,
+      ),
+    );
+    markChanged();
+  };
+
   const updateService = (id: string, changes: Partial<ServiceItem>) => {
     setServices((current) =>
       current.map((service) => (service.id === id ? { ...service, ...changes } : service)),
@@ -263,6 +294,7 @@ export function ClientAdminPrototype() {
       label,
       heading: label,
       introduction: 'Add the information your visitors need here.',
+      design: { ...DEFAULT_DESIGN },
     };
     setSections((current) => {
       const activeIndex = activeSection
@@ -552,12 +584,8 @@ export function ClientAdminPrototype() {
               />
             ) : (
               <DesignEditor
-                layout={layout}
-                colorTreatment={colorTreatment}
-                imageEmphasis={imageEmphasis}
-                onLayoutChange={(value) => { setLayout(value); markChanged(); }}
-                onColorChange={(value) => { setColorTreatment(value); markChanged(); }}
-                onEmphasisChange={(value) => { setImageEmphasis(value); markChanged(); }}
+                design={activeDesign}
+                onDesignChange={updateActiveDesign}
                 onApply={applyChanges}
               />
             )}
@@ -572,14 +600,7 @@ export function ClientAdminPrototype() {
       </section>
 
       {previewVisible ? (
-        <SitePreview
-          sections={sections}
-          activeSectionId={activeSectionId}
-          services={services}
-          layout={layout}
-          colorTreatment={colorTreatment}
-          imageEmphasis={imageEmphasis}
-        />
+        <SitePreview sections={sections} activeSectionId={activeSectionId} services={services} />
       ) : null}
 
       {addDialogOpen ? (
@@ -710,24 +731,12 @@ function ContentEditor({
 }
 
 interface DesignEditorProps {
-  layout: LayoutChoice;
-  colorTreatment: ColorChoice;
-  imageEmphasis: EmphasisChoice;
-  onLayoutChange: (value: LayoutChoice) => void;
-  onColorChange: (value: ColorChoice) => void;
-  onEmphasisChange: (value: EmphasisChoice) => void;
+  design: SectionDesign;
+  onDesignChange: (changes: Partial<SectionDesign>) => void;
   onApply: () => void;
 }
 
-function DesignEditor({
-  layout,
-  colorTreatment,
-  imageEmphasis,
-  onLayoutChange,
-  onColorChange,
-  onEmphasisChange,
-  onApply,
-}: DesignEditorProps) {
+function DesignEditor({ design, onDesignChange, onApply }: DesignEditorProps) {
   return (
     <div className={styles.cardBody}>
       <div className={styles.cardIntroduction}>
@@ -739,24 +748,24 @@ function DesignEditor({
       </div>
 
       <div className={styles.layoutChoices} role="radiogroup" aria-label="Section appearance">
-        <DesignThumbnail label="Simple" value="simple" selected={layout === 'simple'} onSelect={onLayoutChange} />
-        <DesignThumbnail label="Editorial" value="editorial" selected={layout === 'editorial'} onSelect={onLayoutChange} />
-        <DesignThumbnail label="Image-led" value="image-led" selected={layout === 'image-led'} onSelect={onLayoutChange} />
+        <DesignThumbnail label="Simple" value="simple" selected={design.layout === 'simple'} onSelect={(value) => onDesignChange({ layout: value })} />
+        <DesignThumbnail label="Editorial" value="editorial" selected={design.layout === 'editorial'} onSelect={(value) => onDesignChange({ layout: value })} />
+        <DesignThumbnail label="Image-led" value="image-led" selected={design.layout === 'image-led'} onSelect={(value) => onDesignChange({ layout: value })} />
       </div>
 
       <ChoiceRow
         icon={<Palette aria-hidden="true" size={20} />}
         label="Color treatment"
         values={['light', 'brand', 'dark'] as const}
-        selected={colorTreatment}
-        onSelect={onColorChange}
+        selected={design.colorTreatment}
+        onSelect={(value) => onDesignChange({ colorTreatment: value })}
       />
       <ChoiceRow
         icon={<ImageSquare aria-hidden="true" size={20} />}
         label="Image emphasis"
         values={['subtle', 'balanced', 'bold'] as const}
-        selected={imageEmphasis}
-        onSelect={onEmphasisChange}
+        selected={design.imageEmphasis}
+        onSelect={(value) => onDesignChange({ imageEmphasis: value })}
       />
 
       <CardFooter actionLabel="Apply design" onApply={onApply} />
@@ -846,19 +855,9 @@ interface SitePreviewProps {
   sections: PageSection[];
   activeSectionId: string | null;
   services: ServiceItem[];
-  layout: LayoutChoice;
-  colorTreatment: ColorChoice;
-  imageEmphasis: EmphasisChoice;
 }
 
-function SitePreview({
-  sections,
-  activeSectionId,
-  services,
-  layout,
-  colorTreatment,
-  imageEmphasis,
-}: SitePreviewProps) {
+function SitePreview({ sections, activeSectionId, services }: SitePreviewProps) {
   return (
     <aside className={styles.previewPane} aria-label="Site preview">
       <h2>Site preview</h2>
@@ -878,13 +877,7 @@ function SitePreview({
                 data-kind={section.kind}
               >
                 {active ? <span className={styles.previewingLabel}>Previewing: {section.label}</span> : null}
-                <PreviewSectionContent
-                  section={section}
-                  services={services}
-                  layout={layout}
-                  colorTreatment={colorTreatment}
-                  imageEmphasis={imageEmphasis}
-                />
+                <PreviewSectionContent section={section} services={services} />
               </section>
             );
           })}
@@ -897,19 +890,15 @@ function SitePreview({
 function PreviewSectionContent({
   section,
   services,
-  layout,
-  colorTreatment,
-  imageEmphasis,
 }: {
   section: PageSection;
   services: ServiceItem[];
-  layout: LayoutChoice;
-  colorTreatment: ColorChoice;
-  imageEmphasis: EmphasisChoice;
 }) {
+  const { layout, colorTreatment, imageEmphasis } = section.design;
+
   if (section.kind === 'hero') {
     return (
-      <div className={styles.previewHero}>
+      <div className={styles.previewHero} data-color={colorTreatment}>
         <Image src="/prototypes/client-admin/architecture-hero.webp" alt="Modern stone and glass studio" fill sizes="(max-width: 1000px) 100vw, 34vw" priority />
         <div><span>Built around your goals</span><h3>{section.heading}</h3><p>{section.introduction}</p><button type="button">Get in touch</button></div>
       </div>
@@ -932,7 +921,7 @@ function PreviewSectionContent({
 
   if (section.kind === 'testimonials') {
     return (
-      <div className={styles.previewTestimonial}>
+      <div className={styles.previewTestimonial} data-color={colorTreatment}>
         <h3>{section.heading}</h3>
         <Quotes aria-hidden="true" size={28} weight="fill" />
         <p>“Our new site finally feels easy to keep current—and it still looks like us.”</p>
@@ -942,8 +931,8 @@ function PreviewSectionContent({
   }
 
   if (section.kind === 'contact') {
-    return <div className={styles.previewContact}><div><h3>{section.heading}</h3><p>{section.introduction}</p></div><button type="button">Get in touch</button></div>;
+    return <div className={styles.previewContact} data-color={colorTreatment}><div><h3>{section.heading}</h3><p>{section.introduction}</p></div><button type="button">Get in touch</button></div>;
   }
 
-  return <div className={styles.previewGeneric}><h3>{section.heading}</h3><p>{section.introduction}</p></div>;
+  return <div className={styles.previewGeneric} data-color={colorTreatment}><h3>{section.heading}</h3><p>{section.introduction}</p></div>;
 }

@@ -1035,7 +1035,13 @@
   transition: opacity 220ms ease, filter 220ms ease;
 }
 
-.sitePage[data-has-selection='true'] .previewSection {
+/*
+ * Dim every section except the one being edited. The active section is
+ * excluded here rather than relying on `.activePreviewSection` to win the
+ * cascade: that rule is a single class, so grouping it with this
+ * three-specificity selector previously left the active section dimmed too.
+ */
+.sitePage[data-has-selection='true'] .previewSection:not(.activePreviewSection) {
   opacity: 0.25;
   filter: grayscale(0.4);
 }
@@ -1322,6 +1328,82 @@
   flex: 0 0 auto;
   padding: 9px 14px;
   font-size: 8px;
+}
+
+/*
+ * Colour treatment belongs to the section being edited, so every preview kind
+ * can carry it — not just the services block. Dark and brand treatments also
+ * re-point the secondary text and controls at the treatment ink; without that
+ * they kept the light-section greys and became unreadable.
+ */
+.previewHero[data-color='brand'],
+.previewTestimonial[data-color='brand'],
+.previewContact[data-color='brand'],
+.previewGeneric[data-color='brand'] {
+  background: #e9f8e4;
+  color: #12240c;
+}
+
+.previewHero[data-color='dark'],
+.previewTestimonial[data-color='dark'],
+.previewContact[data-color='dark'],
+.previewGeneric[data-color='dark'] {
+  background: #071a37;
+  color: #ffffff;
+}
+
+.previewHero[data-color='brand'] > div {
+  background: rgba(233, 248, 228, 0.93);
+  color: #12240c;
+}
+
+.previewHero[data-color='dark'] > div {
+  background: rgba(7, 26, 55, 0.9);
+  color: #ffffff;
+}
+
+.previewHero[data-color='brand'] p,
+.previewTestimonial[data-color='brand'] small,
+.previewContact[data-color='brand'] p,
+.previewGeneric[data-color='brand'] p,
+.previewHero[data-color='dark'] p,
+.previewTestimonial[data-color='dark'] small,
+.previewContact[data-color='dark'] p,
+.previewGeneric[data-color='dark'] p {
+  color: inherit;
+  opacity: 0.78;
+}
+
+.previewHero[data-color='dark'] span,
+.previewServices[data-color='dark'] .previewSectionHeading > span {
+  color: #b7e08a;
+}
+
+/* The brand accent is tuned for the plain canvas; on the lighter brand wash it
+   drops to ~3.8:1, so use a deeper leaf tone inside brand sections. */
+.previewHero[data-color='brand'] span,
+.previewServices[data-color='brand'] .previewSectionHeading > span {
+  color: #3f6b1f;
+}
+
+.previewTestimonial[data-color='dark'] > svg {
+  color: #7fb0ff;
+}
+
+.previewHero[data-color='dark'] button,
+.previewTestimonial[data-color='dark'] button,
+.previewContact[data-color='dark'] button,
+.previewGeneric[data-color='dark'] button {
+  background: #ffffff;
+  color: #071a37;
+}
+
+.previewServices[data-color='dark'] .previewServiceGrid article {
+  border-left-color: rgba(255, 255, 255, 0.16);
+}
+
+.previewServices[data-color='dark'] .previewServiceGrid svg {
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .dialogBackdrop {
